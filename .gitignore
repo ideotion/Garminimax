@@ -35,3 +35,6 @@ exports/
 
 # Vendored assets are intentionally committed (web/vendor/*) so the app works offline.
 # Do NOT ignore them.
+
+# visual-harness output (regenerable; the committed artifact is tests/visual-baselines/)
+artifacts/
