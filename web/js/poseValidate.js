@@ -36,7 +36,13 @@
     contactTol: 3.0,     // a joint within this height of the floor is a contact
     pierceTol: 3.5,      // nothing may sit further below the floor than this
     contactRadius: 6.0,  // effective half-width of a real contact (foot/hand)
-    comMargin: 10.0,     // extra allowance beyond the support hull (units)
+    // Extra allowance beyond the support hull (units). Calibrated to the content:
+    // a single-arm loaded carry (suitcase) legitimately holds the BODY's COM up
+    // to ~16 units outside the feet — the carried mass (unmodeled here) balances
+    // the counter-lean — while the nearest genuine imbalance (a kneeling lean
+    // thrown past the knees) sits at ~23 and prone hovers at 50+. 12 puts the
+    // 18-unit threshold in that gap: loaded leans pass, real imbalance fails.
+    comMargin: 12.0,
   };
 
   function contactPoints(jp, opts = {}) {
@@ -117,9 +123,10 @@
       }
     }
 
-    // Validate what a renderer would actually draw: grounded, with the weight
-    // shift active except when the human is braced on an external support.
-    const jp = P.forwardKinematics(pose, { ground: true, balance: !o.supported });
+    // Validate the SETTLED skeleton (grounded, pitched, and weight-shifted
+    // unless braced) — the same correction the renderer bakes into its key
+    // poses, so the validator judges what is actually drawn.
+    const jp = P.forwardKinematics(pose, { ground: true, settle: true, balance: !o.supported });
     for (const j of CONTACT_JOINTS) {
       const p = jp[j];
       if (p && p[1] < P.GROUND_Y - o.pierceTol) {

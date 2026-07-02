@@ -358,7 +358,9 @@
     // contact — feet in standing work, hands/knees/hips in floor and prone work
     // — rests exactly on the ground plane. This is what pulls the body down into
     // a squat AND what stops a push-up's hands or a kneeling shin piercing the
-    // floor, without touching any authored bone angle.
+    // floor, without touching any authored bone angle. Grounding and the snap
+    // below are CONTINUOUS functions of the pose, so they are safe to run every
+    // animation frame; the heavier `settle` corrections are not (see below).
     if (opts.ground) {
       let low = Infinity;
       for (const n of CONTACT_CANDIDATES) if (jointPos[n] && jointPos[n][1] < low) low = jointPos[n][1];
@@ -366,30 +368,33 @@
         const shift = GROUND_Y - low;
         for (const k in jointPos) jointPos[k] = [jointPos[k][0], jointPos[k][1] + shift, jointPos[k][2]];
       }
-      // Contact snap: chain-end joints that land within CONTACT_SNAP of the
-      // floor are planted exactly on it. Art keyframes are impressionistic —
-      // this turns "nearly touching" into a real contact (bearing on the base
-      // of support) at the cost of an imperceptible (<8-unit) capsule stretch.
-      for (const n of _SNAP_ENDS) {
-        const p = jointPos[n];
-        if (p && p[1] > GROUND_Y && p[1] <= GROUND_Y + CONTACT_SNAP) p[1] = GROUND_Y;
+      // Contact snap: a joint within CONTACT_SNAP of the floor is drawn toward
+      // it. SMOOTH (h -> h*h/SNAP): fully planted at the floor, no pull at the
+      // threshold, continuous in between — so it never pops between frames while
+      // still turning "nearly touching" art into a real contact. Snapping moves
+      // one joint's height independently, so it is NOT length-preserving; the
+      // pose baker turns it off (opts.snap === false) so its inverse-FK
+      // round-trips exactly, then the smooth snap is re-applied at draw time.
+      if (opts.snap !== false) {
+        for (const n of _SNAP_ENDS) {
+          const p = jointPos[n];
+          if (p && p[1] > GROUND_Y && p[1] < GROUND_Y + CONTACT_SNAP) {
+            const h = p[1] - GROUND_Y;
+            p[1] = GROUND_Y + h * h / CONTACT_SNAP;
+          }
+        }
       }
-      // Resting pitch: the fixed-length skeleton leaves floor-facing joints
-      // hovering where the foreshortened art put them near (but not on) the
-      // floor. Real bodies pivot about what already touches — a push-up about
-      // its toes, a bridge about its planted hands, a prone lift about its
-      // hips — so rigidly pitch the whole body about the grounded contact line
-      // until the resting side touches too. Pure rotation: every bone length
-      // and authored angle is preserved.
-      _restingPitch(jointPos);
-      // Balance (opt-in): in single-support standing poses the authored 2-D art
-      // keeps the body centered, which would topple a real human. Shift the
-      // pelvis (and everything not planted) so the centre of mass moves over
-      // the base of support, keeping planted feet fixed via two-bone leg IK.
-      if (opts.balance) {
-        balanceAdjust(jointPos);
-        // Safety: the weight-shift's small pelvis drop must never leave a
-        // contact candidate under the floor. Re-lift if it did.
+      // Settle (opt-in): the discontinuous corrections — the resting pitch that
+      // plants a prone body's hovering side, and the weight shift that moves the
+      // COM over the base of support. These are step-changing functions of the
+      // pose (a contact appears, a cap engages), so they must NOT run per frame
+      // (they pop). They are applied once to the KEY poses and baked in
+      // (see bakePose); the animation then interpolates already-settled poses
+      // and only re-grounds (above) each frame.
+      if (opts.settle) {
+        _restingPitch(jointPos);
+        if (opts.balance) balanceAdjust(jointPos);
+        // The pitch/shift must never leave a contact candidate under the floor.
         let low2 = Infinity;
         for (const n of CONTACT_CANDIDATES) if (jointPos[n] && jointPos[n][1] < low2) low2 = jointPos[n][1];
         if (low2 < GROUND_Y) for (const k in jointPos) jointPos[k] = [jointPos[k][0], jointPos[k][1] + (GROUND_Y - low2), jointPos[k][2]];
@@ -419,10 +424,12 @@
   // pose into nonsense), so the solve becomes a no-op instead.
   const _PITCH_MAX_RAD = 15 * _RAD;
 
-  // Rigid rotation about the world-X line through `pivot` planting `target`
-  // (both are joint positions). Preserves every bone length; afterwards the
-  // planted ends are re-snapped and nothing is left under the floor.
-  // Returns true when applied, false when the needed angle exceeds the guard.
+  // Rigid rotation about the world-X line through `pivot` (a grounded contact at
+  // the floor) so that `target` lands exactly on the floor too. The rotation
+  // preserves every bone length -- theta = atan(dy/dz) puts the target at the
+  // pivot's height by construction, so no length-changing snap is needed here;
+  // any residual float is handled by the smooth snap at draw time. Returns true
+  // when applied, false when the needed angle exceeds the guard.
   function _pitchAbout(jp, pivot, target) {
     const dy = target[1] - pivot[1], dz = target[2] - pivot[2];
     if (Math.abs(dz) < 1e-6) return false;
@@ -433,10 +440,6 @@
       const p = jp[k];
       const ry = p[1] - pivot[1], rz = p[2] - pivot[2];
       jp[k] = [p[0], pivot[1] + ry * c - rz * s, pivot[2] + ry * s + rz * c];
-    }
-    for (const n of _SNAP_ENDS) {
-      const p = jp[n];
-      if (p && p[1] > GROUND_Y && p[1] <= GROUND_Y + CONTACT_SNAP) p[1] = GROUND_Y;
     }
     let low = GROUND_Y;
     for (const n of CONTACT_CANDIDATES) if (jp[n] && jp[n][1] < low) low = jp[n][1];
@@ -538,19 +541,33 @@
   // A pose that needs more than that to balance is genuinely off-balance and is
   // left off-balance, so the plausibility validator can still flag it.
   function balanceAdjust(jp) {
+    // Weight-shift is a STANDING correction. Skip it unless the trunk is roughly
+    // upright: a prone/plank/lying body has its own base of support and does not
+    // weight-shift. Gate on the shoulder-line rising above the hips.
+    const sm = [(jp.shoulderL[0] + jp.shoulderR[0]) / 2, (jp.shoulderL[1] + jp.shoulderR[1]) / 2,
+      (jp.shoulderL[2] + jp.shoulderR[2]) / 2];
+    const tv = V.sub(sm, jp.hips), tl = V.len(tv);
+    if (tl < 1e-6 || tv[1] / tl < 0.5) return;
+
     let traveled = 0;
     for (let iter = 0; iter < 4; iter++) {
       if (traveled >= _BAL_MAX_TOTAL - 0.5) return;
+      // Read the floor contacts. A leg is a STANCE leg when its foot or toe is
+      // down — the ankle rides ~6 units up even when the foot is flat, so stance
+      // is read off the foot/toe, never the ankle. Any NON-foot contact
+      // (hand/knee/hip on the floor) means this is floor work, not a standing
+      // weight-shift, so the base hull already speaks for itself: leave it.
       const contacts = [];
+      const stance = { L: false, R: false };
       let nonFoot = false;
       for (const n of CONTACT_CANDIDATES) {
         const p = jp[n];
-        if (p && p[1] <= GROUND_Y + _BAL_TOL) {
-          if (!_FOOT_SET[n]) { nonFoot = true; break; }
-          contacts.push(p);
-        }
+        if (!p || p[1] > GROUND_Y + _BAL_TOL) continue;
+        if (!_FOOT_SET[n]) { nonFoot = true; break; }
+        contacts.push(p);
+        if (n !== "ankleL" && n !== "ankleR") stance[_FOOT_SET[n]] = true;
       }
-      if (nonFoot || !contacts.length) return;
+      if (nonFoot || !contacts.length || !(stance.L || stance.R)) return;
 
       const com = centerOfMass(jp);
       // Nearest support point: the closest point on the segment spanning the
@@ -567,27 +584,26 @@
       const d = Math.hypot(ox, oz);
       if (d <= _BAL_TARGET) return;
 
-      // Move everything except the planted feet toward the support point; the
-      // COM follows at slightly less than the step, so a few iterations converge.
-      // Never travel past the cumulative budget.
+      // Move everything toward the support point EXCEPT the stance feet, which
+      // stay planted. The COM follows at slightly less than the step, so a few
+      // iterations converge; never travel past the cumulative budget.
       let step = Math.min(d - _BAL_TARGET * 0.5, _BAL_MAX_TOTAL - traveled);
-      const planted = { L: null, R: null };
-      for (const [n, side] of Object.entries(_FOOT_SET)) {
-        if (jp[n] && jp[n][1] <= GROUND_Y + _BAL_TOL) {
-          planted[side] = planted[side] || {};
-          planted[side][n] = jp[n].slice();
-        }
-      }
-      // Shifting the pelvis over a planted, near-straight leg tilts that leg
-      // about its ankle — the hip travels an arc, so the pelvis must DROP a
-      // little as it moves (the natural "settle into the stance hip"). Compute
-      // the drop each planted leg requires; cap the step where even a dropped
-      // hip cannot reach.
       const mxOf = (st) => (-ox / d) * st, mzOf = (st) => (-oz / d) * st;
+
+      // Each stance foot is held RIGID: the ankle, foot and toe stay exactly
+      // where they are and only the knee re-solves to the shifted hip — so no
+      // leg bone (least of all the short foot bone) is ever stretched. Save the
+      // whole unit, and compute how far the pelvis must DROP so a near-straight
+      // stance leg can still reach its fixed ankle after the horizontal shift
+      // (swinging the pelvis over a planted leg carries the hip along an arc).
+      const saved = { L: null, R: null };
       let drop = 0;
       for (const side of ["L", "R"]) {
-        if (!planted[side] || !planted[side]["ankle" + side]) continue;
+        if (!stance[side]) continue;
+        saved[side] = {};
+        for (const j of ["ankle" + side, "foot" + side, "toe" + side]) if (jp[j]) saved[side][j] = jp[j].slice();
         const hip = jp["hip" + side], ankle = jp["ankle" + side];
+        if (!hip || !ankle) continue;
         const reach = BONE_LEN["thigh" + side] + BONE_LEN["shin" + side] - 1;
         let horiz = Math.hypot(hip[0] + mxOf(step) - ankle[0], hip[2] + mzOf(step) - ankle[2]);
         if (horiz >= reach) {                       // cannot reach even flat: shorten the step
@@ -608,13 +624,14 @@
       const mx = mxOf(step), mz = mzOf(step);
       const kneeBefore = { L: jp.kneeL && jp.kneeL.slice(), R: jp.kneeR && jp.kneeR.slice() };
       for (const k in jp) jp[k] = [jp[k][0] + mx, jp[k][1] - drop, jp[k][2] + mz];
-      // Re-plant grounded feet and re-solve those legs (hip moved; ankle fixed).
+      // Restore each stance foot rigidly and re-solve its knee (the hip moved;
+      // the ankle is pinned), so every leg bone stays at its rest length.
       for (const side of ["L", "R"]) {
-        const set = planted[side];
+        const set = saved[side];
         if (!set) continue;
         for (const [n, pos] of Object.entries(set)) jp[n] = pos;
         const hip = jp["hip" + side], ankle = jp["ankle" + side];
-        if (!hip || !ankle || !set["ankle" + side]) continue;
+        if (!hip || !ankle) continue;
         const l1 = BONE_LEN["thigh" + side], l2 = BONE_LEN["shin" + side];
         // Preserve the authored bend direction: pole = the old knee's offset
         // from the (old) hip->ankle axis, falling back to "forward".
@@ -770,13 +787,49 @@
     return poses;
   }
 
+  // Slerp with an explicit hemisphere for b (no double-cover flip): the caller
+  // decides which of b / -b to head toward, so a bone can be interpolated along
+  // the path that respects its joint limit rather than the blindly-shorter arc.
+  function _slerpToward(a, b, t) {
+    const d = a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3];
+    if (Math.abs(d) > 0.9995) {
+      return Q.norm([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t, a[3] + (b[3] - a[3]) * t]);
+    }
+    const th0 = Math.acos(Math.max(-1, Math.min(1, d))), th = th0 * t;
+    const s0 = Math.sin(th0), s1 = Math.sin(th0 - th) / s0, s2 = Math.sin(th) / s0;
+    return [a[0] * s1 + b[0] * s2, a[1] * s1 + b[1] * s2, a[2] * s1 + b[2] * s2, a[3] * s1 + b[3] * s2];
+  }
+
+  // Interpolate one bone, choosing the double-cover sign whose path stays inside
+  // the joint limit. Q.slerp always takes the shorter 4-D arc, but for a hinge
+  // whose two keyframes sit on opposite sides of its axis (a forearm pointing
+  // right in one pose and left in the next) that shorter arc sweeps the joint
+  // OVER THE TOP — through a 180deg fold that exceeds the limit and, because the
+  // rotation axis flips through the antipode, makes the per-frame clamp teleport
+  // the hand. The other hemisphere keeps the sweep low, through the rest pose,
+  // which is both within the limit and the natural motion. Only far-apart keys
+  // can do this, so near-parallel poses take the fast path (bit-identical).
+  function _slerpBone(name, a, b, t) {
+    let d = a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3];
+    let bb = d < 0 ? [-b[0], -b[1], -b[2], -b[3]] : b;   // shorter-arc hemisphere (Q.slerp's pick)
+    if (Math.abs(d) < 0.5) {                             // keys > ~120deg apart: check the sweep
+      const lim = (JOINT_LIMITS[name] != null ? JOINT_LIMITS[name] : 180) * _RAD;
+      const swShort = swingAngle(_slerpToward(a, bb, 0.5));
+      if (swShort > lim + 1e-6) {
+        const bAlt = [-bb[0], -bb[1], -bb[2], -bb[3]];
+        if (swingAngle(_slerpToward(a, bAlt, 0.5)) < swShort) bb = bAlt;
+      }
+    }
+    return _slerpToward(a, bb, t);
+  }
+
   // Interpolate two bone-rotation poses (per-bone slerp + linear pelvis travel).
   function slerpPose(a, b, t) {
     const out = {};
     const names = new Set([...Object.keys(a), ...Object.keys(b)]);
     for (const n of names) {
       if (n.startsWith("__")) continue;  // meta channels (__root/__twist) are not quats
-      out[n] = clampJoint(n, Q.slerp(a[n] || Q.IDENT, b[n] || Q.IDENT, t));
+      out[n] = clampJoint(n, _slerpBone(n, a[n] || Q.IDENT, b[n] || Q.IDENT, t));
     }
     if (a.__root || b.__root) {
       const ra = a.__root || REST.hips, rb = b.__root || REST.hips;
@@ -792,11 +845,40 @@
     return out;
   }
 
+  // Bake the discontinuous SETTLE corrections (resting pitch + weight shift) into
+  // a pose: apply them once, then read the settled skeleton back as per-bone
+  // LOCAL rotations + root via inverse kinematics. The animation interpolates
+  // these already-settled poses (smoothly, via slerpPose) and only re-grounds
+  // each frame -- so the corrections never recompute mid-motion and never pop.
+  // Length-preserving corrections round-trip exactly; the tiny contact-snap
+  // stretch is deliberately dropped here and re-applied smoothly at draw time.
+  function bakePose(pose, opts = {}) {
+    // snap:false -> the settled skeleton is length-preserving, so the inverse-FK
+    // below reproduces it exactly (the smooth snap is re-applied when drawn).
+    const jp = forwardKinematics(pose, { ground: true, settle: true, snap: false, balance: opts.balance !== false });
+    const worldRot = {}, out = { __root: jp.hips.slice() };
+    for (const b of BONES) {
+      const d = V.sub(jp[b.to], jp[b.from]);
+      const wr = V.len(d) > 1e-9 ? Q.fromTo(REST_DIR[b.name], d) : Q.IDENT;
+      const parentWorld = b.parent ? (worldRot[b.parent] || Q.IDENT) : Q.IDENT;
+      out[b.name] = Q.norm(Q.mul(Q.conj(parentWorld), wr));
+      worldRot[b.name] = wr;
+    }
+    return out;
+  }
+
+  // Bake a whole pose-map (the renderer settles every key pose once, up front).
+  function bakePoses(poses, opts = {}) {
+    const out = {};
+    for (const k in poses) out[k] = bakePose(poses[k], opts);
+    return out;
+  }
+
   return {
     V, Q, REST, BONES, BONE_BY_NAME, REST_DIR, BONE_LEN, GROUND_Y, JOINT_LIMITS,
     CONTACT_CANDIDATES, CONTACT_SNAP, SEGMENTS, centerOfMass,
     forwardKinematics, balanceAdjust, adaptPose, adaptExercise, slerpPose, solveTwoBoneIK,
-    swingAngle, clampJoint, axisAngleQuat,
+    bakePose, bakePoses, swingAngle, clampJoint, axisAngleQuat,
     EASINGS, easingFor, LIFE_DEFAULTS, LIFE_MAX, breathWave, applyLife,
   };
 });

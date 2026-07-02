@@ -93,8 +93,18 @@ const FormModel3D = (() => {
     const live = (opts.live && typeof MotionParams !== "undefined")
       ? MotionParams.motionParamsFor(opts.live) : null;
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const poses = ex.poses3d || P.adaptExercise(ex);
     const phases = ex.phases || [];
+
+    // Weight shift onto the base of support (bounded) — off when the figure is
+    // braced on an external support (chair/wall/counter/step), where the weight
+    // is legitimately shared with the object rather than the feet.
+    const SUPPORT_OBJECTS = ["chair", "wall", "counter", "step"];
+    const braced = ex.object && Object.values(ex.object).some((v) => SUPPORT_OBJECTS.includes(v));
+    // Settle each key pose ONCE (grounding + resting pitch + weight shift), then
+    // animate by interpolating the settled poses. Per frame we only re-ground
+    // (a continuous op), so the discontinuous corrections never pop mid-motion.
+    const poses = P.bakePoses(ex.poses3d || P.adaptExercise(ex), { balance: !braced });
+    const fkOpts = { ground: true };
     const restName = poses.stand ? "stand" : Object.keys(poses)[0];
 
     let raf = null, phaseIdx = 0, phaseStart = 0, reps = 0, playing = false, destroyed = false;
@@ -106,13 +116,6 @@ const FormModel3D = (() => {
     const onlyFront = ex.views && ex.views.front && !ex.views.side;
     const baseYaw = onlySide ? 90 : onlyFront ? 0 : 24;
     const cam = makeCamera(baseYaw);
-
-    // Weight shift onto the base of support (bounded) — off when the figure is
-    // braced on an external support (chair/wall/counter/step), where the weight
-    // is legitimately shared with the object rather than the feet.
-    const SUPPORT_OBJECTS = ["chair", "wall", "counter", "step"];
-    const braced = ex.object && Object.values(ex.object).some((v) => SUPPORT_OBJECTS.includes(v));
-    const fkOpts = { ground: true, balance: !braced };
 
     host.innerHTML = "";
     const el = (tag, cls, html) => { const n = document.createElement(tag); if (cls) n.className = cls; if (html != null) n.innerHTML = html; return n; };
