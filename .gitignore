@@ -38,3 +38,7 @@ exports/
 
 # visual-harness output (regenerable; the committed artifact is tests/visual-baselines/)
 artifacts/
+
+# self-mocap: locally vendored model weights are never committed
+tools/selfmocap/model/
+tools/selfmocap/vendor/
