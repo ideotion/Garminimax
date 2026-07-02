@@ -1,0 +1,16 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  parity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      # Assert the JS analytics engine still matches the golden vectors dumped
+      # from the canonical Python core (test/golden.json). This is the drift guard.
+      - run: node --test

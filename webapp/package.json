@@ -1,0 +1,13 @@
+{
+  "name": "fenix5sync-web",
+  "version": "0.1.0",
+  "description": "Offline, in-browser port of Fenix5Sync analytics (fitness/fatigue/form + dynamic coach).",
+  "type": "module",
+  "license": "GPL-3.0-or-later",
+  "private": true,
+  "scripts": {
+    "test": "node --test",
+    "serve": "python3 -m http.server -d app 8080"
+  },
+  "comment": "The analytics engine is dependency-free. fit-file-parser (MIT) and chart.js (MIT) are loaded at runtime from a CDN by default; vendor them into app/vendor/ for an air-gapped build."
+}

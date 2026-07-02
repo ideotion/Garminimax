@@ -1,0 +1,1264 @@
+{
+ "generated_from": "fenix5sync core",
+ "cases": [
+  {
+   "name": "duration_basis_no_thresholds",
+   "input": {
+    "activities": [
+     {
+      "date": "2024-01-01",
+      "start_time": "2024-01-01T08:00:00",
+      "sport": "running",
+      "duration_s": 3600.0,
+      "avg_power": null,
+      "avg_heart_rate": null
+     },
+     {
+      "date": "2024-01-02",
+      "start_time": "2024-01-02T08:00:00",
+      "sport": "running",
+      "duration_s": 2700.0,
+      "avg_power": null,
+      "avg_heart_rate": null
+     },
+     {
+      "date": "2024-01-04",
+      "start_time": "2024-01-04T08:00:00",
+      "sport": "running",
+      "duration_s": 5400.0,
+      "avg_power": null,
+      "avg_heart_rate": null
+     }
+    ],
+    "athlete": {},
+    "as_of": "2024-01-04",
+    "wellness": []
+   },
+   "training_load": {
+    "unit": "tss",
+    "ctl_days": 42,
+    "atl_days": 7,
+    "current": {
+     "date": "2024-01-04",
+     "ctl": 4.4,
+     "atl": 21.7,
+     "tsb": -8.8
+    },
+    "series": [
+     {
+      "date": "2024-01-01",
+      "load": 60.0,
+      "ctl": 1.4,
+      "atl": 8.0,
+      "tsb": 0.0
+     },
+     {
+      "date": "2024-01-02",
+      "load": 45.0,
+      "ctl": 2.4,
+      "atl": 12.9,
+      "tsb": -6.6
+     },
+     {
+      "date": "2024-01-03",
+      "load": 0.0,
+      "ctl": 2.4,
+      "atl": 11.2,
+      "tsb": -10.5
+     },
+     {
+      "date": "2024-01-04",
+      "load": 90.0,
+      "ctl": 4.4,
+      "atl": 21.7,
+      "tsb": -8.8
+     }
+    ],
+    "coverage": {
+     "activities": 3,
+     "scored": 3,
+     "basis": {
+      "power": 0,
+      "hr": 0,
+      "duration": 3
+     }
+    },
+    "needs": []
+   },
+   "coach_state": {
+    "as_of": "2024-01-04",
+    "unit": "tss",
+    "ctl": 4.4,
+    "atl": 21.7,
+    "tsb": -8.8,
+    "ramp_rate": null,
+    "acwr": null,
+    "acwr_zone": null,
+    "monotony": 1.5,
+    "strain": 292.0,
+    "days_since_hard": 0,
+    "last_hard_date": "2024-01-04",
+    "readiness": null,
+    "history_days": 4,
+    "coverage": {
+     "activities": 3,
+     "scored": 3,
+     "basis": {
+      "power": 0,
+      "hr": 0,
+      "duration": 3
+     }
+    },
+    "needs": [],
+    "notes": [
+     "Ramp rate needs 8 days of history (4 so far).",
+     "ACWR needs 28 days of history (4 so far).",
+     "Fitness (CTL) is still warming up in the first ~6 weeks of history (understated)."
+    ]
+   }
+  },
+  {
+   "name": "hr_trimp_basis",
+   "input": {
+    "activities": [
+     {
+      "date": "2024-01-01",
+      "start_time": "2024-01-01T08:00:00",
+      "sport": "running",
+      "duration_s": 3600.0,
+      "avg_power": null,
+      "avg_heart_rate": 169
+     },
+     {
+      "date": "2024-01-03",
+      "start_time": "2024-01-03T08:00:00",
+      "sport": "running",
+      "duration_s": 2400.0,
+      "avg_power": null,
+      "avg_heart_rate": 150
+     }
+    ],
+    "athlete": {
+     "max_heart_rate": 190,
+     "resting_heart_rate": 50
+    },
+    "as_of": "2024-01-03",
+    "wellness": []
+   },
+   "training_load": {
+    "unit": "trimp",
+    "ctl_days": 42,
+    "atl_days": 7,
+    "current": {
+     "date": "2024-01-03",
+     "ctl": 3.3,
+     "atl": 15.8,
+     "tsb": -9.2
+    },
+    "series": [
+     {
+      "date": "2024-01-01",
+      "load": 100.0,
+      "ctl": 2.4,
+      "atl": 13.3,
+      "tsb": 0.0
+     },
+     {
+      "date": "2024-01-02",
+      "load": 0.0,
+      "ctl": 2.3,
+      "atl": 11.5,
+      "tsb": -11.0
+     },
+     {
+      "date": "2024-01-03",
+      "load": 43.2,
+      "ctl": 3.3,
+      "atl": 15.8,
+      "tsb": -9.2
+     }
+    ],
+    "coverage": {
+     "activities": 2,
+     "scored": 2,
+     "basis": {
+      "power": 0,
+      "hr": 2,
+      "duration": 0
+     }
+    },
+    "needs": []
+   },
+   "coach_state": {
+    "as_of": "2024-01-03",
+    "unit": "trimp",
+    "ctl": 3.3,
+    "atl": 15.8,
+    "tsb": -9.2,
+    "ramp_rate": null,
+    "acwr": null,
+    "acwr_zone": null,
+    "monotony": 1.17,
+    "strain": 168.0,
+    "days_since_hard": 2,
+    "last_hard_date": "2024-01-01",
+    "readiness": null,
+    "history_days": 3,
+    "coverage": {
+     "activities": 2,
+     "scored": 2,
+     "basis": {
+      "power": 0,
+      "hr": 2,
+      "duration": 0
+     }
+    },
+    "needs": [],
+    "notes": [
+     "Ramp rate needs 8 days of history (3 so far).",
+     "ACWR needs 28 days of history (3 so far).",
+     "Fitness (CTL) is still warming up in the first ~6 weeks of history (understated)."
+    ]
+   }
+  },
+  {
+   "name": "power_tss_basis",
+   "input": {
+    "activities": [
+     {
+      "date": "2024-01-01",
+      "start_time": "2024-01-01T08:00:00",
+      "sport": "running",
+      "duration_s": 3600.0,
+      "avg_power": 250,
+      "avg_heart_rate": null
+     },
+     {
+      "date": "2024-01-02",
+      "start_time": "2024-01-02T08:00:00",
+      "sport": "running",
+      "duration_s": 5400.0,
+      "avg_power": 200,
+      "avg_heart_rate": null
+     }
+    ],
+    "athlete": {
+     "ftp_w": 250
+    },
+    "as_of": "2024-01-02",
+    "wellness": []
+   },
+   "training_load": {
+    "unit": "tss",
+    "ctl_days": 42,
+    "atl_days": 7,
+    "current": {
+     "date": "2024-01-02",
+     "ctl": 4.6,
+     "atl": 24.3,
+     "tsb": -11.0
+    },
+    "series": [
+     {
+      "date": "2024-01-01",
+      "load": 100.0,
+      "ctl": 2.4,
+      "atl": 13.3,
+      "tsb": 0.0
+     },
+     {
+      "date": "2024-01-02",
+      "load": 96.0,
+      "ctl": 4.6,
+      "atl": 24.3,
+      "tsb": -11.0
+     }
+    ],
+    "coverage": {
+     "activities": 2,
+     "scored": 2,
+     "basis": {
+      "power": 2,
+      "hr": 0,
+      "duration": 0
+     }
+    },
+    "needs": []
+   },
+   "coach_state": {
+    "as_of": "2024-01-02",
+    "unit": "tss",
+    "ctl": 4.6,
+    "atl": 24.3,
+    "tsb": -11.0,
+    "ramp_rate": null,
+    "acwr": null,
+    "acwr_zone": null,
+    "monotony": 49.0,
+    "strain": 9604.0,
+    "days_since_hard": 0,
+    "last_hard_date": "2024-01-02",
+    "readiness": null,
+    "history_days": 2,
+    "coverage": {
+     "activities": 2,
+     "scored": 2,
+     "basis": {
+      "power": 2,
+      "hr": 0,
+      "duration": 0
+     }
+    },
+    "needs": [],
+    "notes": [
+     "Ramp rate needs 8 days of history (2 so far).",
+     "ACWR needs 28 days of history (2 so far).",
+     "Fitness (CTL) is still warming up in the first ~6 weeks of history (understated)."
+    ]
+   }
+  },
+  {
+   "name": "mixed_bases",
+   "input": {
+    "activities": [
+     {
+      "date": "2024-01-01",
+      "start_time": "2024-01-01T08:00:00",
+      "sport": "running",
+      "duration_s": 3600.0,
+      "avg_power": 250,
+      "avg_heart_rate": null
+     },
+     {
+      "date": "2024-01-02",
+      "start_time": "2024-01-02T08:00:00",
+      "sport": "running",
+      "duration_s": 3600.0,
+      "avg_power": null,
+      "avg_heart_rate": 169
+     }
+    ],
+    "athlete": {
+     "ftp_w": 250,
+     "max_heart_rate": 190,
+     "resting_heart_rate": 50
+    },
+    "as_of": "2024-01-02",
+    "wellness": []
+   },
+   "training_load": {
+    "unit": "mixed",
+    "ctl_days": 42,
+    "atl_days": 7,
+    "current": {
+     "date": "2024-01-02",
+     "ctl": 4.7,
+     "atl": 24.9,
+     "tsb": -11.0
+    },
+    "series": [
+     {
+      "date": "2024-01-01",
+      "load": 100.0,
+      "ctl": 2.4,
+      "atl": 13.3,
+      "tsb": 0.0
+     },
+     {
+      "date": "2024-01-02",
+      "load": 100.0,
+      "ctl": 4.7,
+      "atl": 24.9,
+      "tsb": -11.0
+     }
+    ],
+    "coverage": {
+     "activities": 2,
+     "scored": 2,
+     "basis": {
+      "power": 1,
+      "hr": 1,
+      "duration": 0
+     }
+    },
+    "needs": []
+   },
+   "coach_state": {
+    "as_of": "2024-01-02",
+    "unit": "mixed",
+    "ctl": 4.7,
+    "atl": 24.9,
+    "tsb": -11.0,
+    "ramp_rate": null,
+    "acwr": null,
+    "acwr_zone": null,
+    "monotony": null,
+    "strain": null,
+    "days_since_hard": 0,
+    "last_hard_date": "2024-01-02",
+    "readiness": null,
+    "history_days": 2,
+    "coverage": {
+     "activities": 2,
+     "scored": 2,
+     "basis": {
+      "power": 1,
+      "hr": 1,
+      "duration": 0
+     }
+    },
+    "needs": [],
+    "notes": [
+     "Ramp rate needs 8 days of history (2 so far).",
+     "ACWR needs 28 days of history (2 so far).",
+     "Every day this week carried similar load (very monotonous) -- vary your days.",
+     "Fitness (CTL) is still warming up in the first ~6 weeks of history (understated)."
+    ]
+   }
+  },
+  {
+   "name": "as_of_decays_to_today",
+   "input": {
+    "activities": [
+     {
+      "date": "2024-01-01",
+      "start_time": "2024-01-01T08:00:00",
+      "sport": "running",
+      "duration_s": 5400.0,
+      "avg_power": null,
+      "avg_heart_rate": 175
+     }
+    ],
+    "athlete": {
+     "max_heart_rate": 190,
+     "resting_heart_rate": 50
+    },
+    "as_of": "2024-01-10",
+    "wellness": []
+   },
+   "training_load": {
+    "unit": "trimp",
+    "ctl_days": 42,
+    "atl_days": 7,
+    "current": {
+     "date": "2024-01-10",
+     "ctl": 3.2,
+     "atl": 6.3,
+     "tsb": -3.9
+    },
+    "series": [
+     {
+      "date": "2024-01-01",
+      "load": 171.1,
+      "ctl": 4.0,
+      "atl": 22.8,
+      "tsb": 0.0
+     },
+     {
+      "date": "2024-01-02",
+      "load": 0.0,
+      "ctl": 3.9,
+      "atl": 19.7,
+      "tsb": -18.7
+     },
+     {
+      "date": "2024-01-03",
+      "load": 0.0,
+      "ctl": 3.8,
+      "atl": 17.1,
+      "tsb": -15.8
+     },
+     {
+      "date": "2024-01-04",
+      "load": 0.0,
+      "ctl": 3.7,
+      "atl": 14.8,
+      "tsb": -13.3
+     },
+     {
+      "date": "2024-01-05",
+      "load": 0.0,
+      "ctl": 3.7,
+      "atl": 12.9,
+      "tsb": -11.1
+     },
+     {
+      "date": "2024-01-06",
+      "load": 0.0,
+      "ctl": 3.6,
+      "atl": 11.1,
+      "tsb": -9.2
+     },
+     {
+      "date": "2024-01-07",
+      "load": 0.0,
+      "ctl": 3.5,
+      "atl": 9.7,
+      "tsb": -7.6
+     },
+     {
+      "date": "2024-01-08",
+      "load": 0.0,
+      "ctl": 3.4,
+      "atl": 8.4,
+      "tsb": -6.2
+     },
+     {
+      "date": "2024-01-09",
+      "load": 0.0,
+      "ctl": 3.3,
+      "atl": 7.3,
+      "tsb": -5.0
+     },
+     {
+      "date": "2024-01-10",
+      "load": 0.0,
+      "ctl": 3.2,
+      "atl": 6.3,
+      "tsb": -3.9
+     }
+    ],
+    "coverage": {
+     "activities": 1,
+     "scored": 1,
+     "basis": {
+      "power": 0,
+      "hr": 1,
+      "duration": 0
+     }
+    },
+    "needs": []
+   },
+   "coach_state": {
+    "as_of": "2024-01-10",
+    "unit": "trimp",
+    "ctl": 3.2,
+    "atl": 6.3,
+    "tsb": -3.9,
+    "ramp_rate": -0.6,
+    "acwr": null,
+    "acwr_zone": null,
+    "monotony": null,
+    "strain": null,
+    "days_since_hard": 9,
+    "last_hard_date": "2024-01-01",
+    "readiness": null,
+    "history_days": 10,
+    "coverage": {
+     "activities": 1,
+     "scored": 1,
+     "basis": {
+      "power": 0,
+      "hr": 1,
+      "duration": 0
+     }
+    },
+    "needs": [],
+    "notes": [
+     "ACWR needs 28 days of history (10 so far).",
+     "Fitness (CTL) is still warming up in the first ~6 weeks of history (understated)."
+    ]
+   }
+  },
+  {
+   "name": "five_week_build_coach_state",
+   "input": {
+    "activities": [
+     {
+      "date": "2024-01-01",
+      "start_time": "2024-01-01T08:00:00",
+      "sport": "running",
+      "duration_s": 4800.0,
+      "avg_power": null,
+      "avg_heart_rate": 168
+     },
+     {
+      "date": "2024-01-02",
+      "start_time": "2024-01-02T08:00:00",
+      "sport": "running",
+      "duration_s": 2700.0,
+      "avg_power": null,
+      "avg_heart_rate": 148
+     },
+     {
+      "date": "2024-01-03",
+      "start_time": "2024-01-03T08:00:00",
+      "sport": "running",
+      "duration_s": 2700.0,
+      "avg_power": null,
+      "avg_heart_rate": 148
+     },
+     {
+      "date": "2024-01-04",
+      "start_time": "2024-01-04T08:00:00",
+      "sport": "running",
+      "duration_s": 4800.0,
+      "avg_power": null,
+      "avg_heart_rate": 168
+     },
+     {
+      "date": "2024-01-05",
+      "start_time": "2024-01-05T08:00:00",
+      "sport": "running",
+      "duration_s": 2700.0,
+      "avg_power": null,
+      "avg_heart_rate": 148
+     },
+     {
+      "date": "2024-01-06",
+      "start_time": "2024-01-06T08:00:00",
+      "sport": "running",
+      "duration_s": 2700.0,
+      "avg_power": null,
+      "avg_heart_rate": 148
+     },
+     {
+      "date": "2024-01-07",
+      "start_time": "2024-01-07T08:00:00",
+      "sport": "running",
+      "duration_s": 4800.0,
+      "avg_power": null,
+      "avg_heart_rate": 168
+     },
+     {
+      "date": "2024-01-08",
+      "start_time": "2024-01-08T08:00:00",
+      "sport": "running",
+      "duration_s": 2700.0,
+      "avg_power": null,
+      "avg_heart_rate": 148
+     },
+     {
+      "date": "2024-01-09",
+      "start_time": "2024-01-09T08:00:00",
+      "sport": "running",
+      "duration_s": 2700.0,
+      "avg_power": null,
+      "avg_heart_rate": 148
+     },
+     {
+      "date": "2024-01-10",
+      "start_time": "2024-01-10T08:00:00",
+      "sport": "running",
+      "duration_s": 4800.0,
+      "avg_power": null,
+      "avg_heart_rate": 168
+     },
+     {
+      "date": "2024-01-11",
+      "start_time": "2024-01-11T08:00:00",
+      "sport": "running",
+      "duration_s": 2700.0,
+      "avg_power": null,
+      "avg_heart_rate": 148
+     },
+     {
+      "date": "2024-01-12",
+      "start_time": "2024-01-12T08:00:00",
+      "sport": "running",
+      "duration_s": 2700.0,
+      "avg_power": null,
+      "avg_heart_rate": 148
+     },
+     {
+      "date": "2024-01-13",
+      "start_time": "2024-01-13T08:00:00",
+      "sport": "running",
+      "duration_s": 4800.0,
+      "avg_power": null,
+      "avg_heart_rate": 168
+     },
+     {
+      "date": "2024-01-14",
+      "start_time": "2024-01-14T08:00:00",
+      "sport": "running",
+      "duration_s": 2700.0,
+      "avg_power": null,
+      "avg_heart_rate": 148
+     },
+     {
+      "date": "2024-01-15",
+      "start_time": "2024-01-15T08:00:00",
+      "sport": "running",
+      "duration_s": 2700.0,
+      "avg_power": null,
+      "avg_heart_rate": 148
+     },
+     {
+      "date": "2024-01-16",
+      "start_time": "2024-01-16T08:00:00",
+      "sport": "running",
+      "duration_s": 4800.0,
+      "avg_power": null,
+      "avg_heart_rate": 168
+     },
+     {
+      "date": "2024-01-17",
+      "start_time": "2024-01-17T08:00:00",
+      "sport": "running",
+      "duration_s": 2700.0,
+      "avg_power": null,
+      "avg_heart_rate": 148
+     },
+     {
+      "date": "2024-01-18",
+      "start_time": "2024-01-18T08:00:00",
+      "sport": "running",
+      "duration_s": 2700.0,
+      "avg_power": null,
+      "avg_heart_rate": 148
+     },
+     {
+      "date": "2024-01-19",
+      "start_time": "2024-01-19T08:00:00",
+      "sport": "running",
+      "duration_s": 4800.0,
+      "avg_power": null,
+      "avg_heart_rate": 168
+     },
+     {
+      "date": "2024-01-20",
+      "start_time": "2024-01-20T08:00:00",
+      "sport": "running",
+      "duration_s": 2700.0,
+      "avg_power": null,
+      "avg_heart_rate": 148
+     },
+     {
+      "date": "2024-01-21",
+      "start_time": "2024-01-21T08:00:00",
+      "sport": "running",
+      "duration_s": 2700.0,
+      "avg_power": null,
+      "avg_heart_rate": 148
+     },
+     {
+      "date": "2024-01-22",
+      "start_time": "2024-01-22T08:00:00",
+      "sport": "running",
+      "duration_s": 4800.0,
+      "avg_power": null,
+      "avg_heart_rate": 168
+     },
+     {
+      "date": "2024-01-23",
+      "start_time": "2024-01-23T08:00:00",
+      "sport": "running",
+      "duration_s": 2700.0,
+      "avg_power": null,
+      "avg_heart_rate": 148
+     },
+     {
+      "date": "2024-01-24",
+      "start_time": "2024-01-24T08:00:00",
+      "sport": "running",
+      "duration_s": 2700.0,
+      "avg_power": null,
+      "avg_heart_rate": 148
+     },
+     {
+      "date": "2024-01-25",
+      "start_time": "2024-01-25T08:00:00",
+      "sport": "running",
+      "duration_s": 4800.0,
+      "avg_power": null,
+      "avg_heart_rate": 168
+     },
+     {
+      "date": "2024-01-26",
+      "start_time": "2024-01-26T08:00:00",
+      "sport": "running",
+      "duration_s": 2700.0,
+      "avg_power": null,
+      "avg_heart_rate": 148
+     },
+     {
+      "date": "2024-01-27",
+      "start_time": "2024-01-27T08:00:00",
+      "sport": "running",
+      "duration_s": 2700.0,
+      "avg_power": null,
+      "avg_heart_rate": 148
+     },
+     {
+      "date": "2024-01-28",
+      "start_time": "2024-01-28T08:00:00",
+      "sport": "running",
+      "duration_s": 4800.0,
+      "avg_power": null,
+      "avg_heart_rate": 168
+     },
+     {
+      "date": "2024-01-29",
+      "start_time": "2024-01-29T08:00:00",
+      "sport": "running",
+      "duration_s": 2700.0,
+      "avg_power": null,
+      "avg_heart_rate": 148
+     },
+     {
+      "date": "2024-01-30",
+      "start_time": "2024-01-30T08:00:00",
+      "sport": "running",
+      "duration_s": 2700.0,
+      "avg_power": null,
+      "avg_heart_rate": 148
+     },
+     {
+      "date": "2024-01-31",
+      "start_time": "2024-01-31T08:00:00",
+      "sport": "running",
+      "duration_s": 4800.0,
+      "avg_power": null,
+      "avg_heart_rate": 168
+     },
+     {
+      "date": "2024-02-01",
+      "start_time": "2024-02-01T08:00:00",
+      "sport": "running",
+      "duration_s": 2700.0,
+      "avg_power": null,
+      "avg_heart_rate": 148
+     },
+     {
+      "date": "2024-02-02",
+      "start_time": "2024-02-02T08:00:00",
+      "sport": "running",
+      "duration_s": 2700.0,
+      "avg_power": null,
+      "avg_heart_rate": 148
+     },
+     {
+      "date": "2024-02-03",
+      "start_time": "2024-02-03T08:00:00",
+      "sport": "running",
+      "duration_s": 4800.0,
+      "avg_power": null,
+      "avg_heart_rate": 168
+     },
+     {
+      "date": "2024-02-04",
+      "start_time": "2024-02-04T08:00:00",
+      "sport": "running",
+      "duration_s": 2700.0,
+      "avg_power": null,
+      "avg_heart_rate": 148
+     }
+    ],
+    "athlete": {
+     "max_heart_rate": 190,
+     "resting_heart_rate": 50
+    },
+    "as_of": "2024-02-05",
+    "wellness": [
+     {
+      "date": "2024-01-29",
+      "resting_hr": 50,
+      "avg_stress": 25
+     },
+     {
+      "date": "2024-01-30",
+      "resting_hr": 50,
+      "avg_stress": 25
+     },
+     {
+      "date": "2024-01-31",
+      "resting_hr": 50,
+      "avg_stress": 25
+     },
+     {
+      "date": "2024-02-01",
+      "resting_hr": 50,
+      "avg_stress": 25
+     },
+     {
+      "date": "2024-02-02",
+      "resting_hr": 50,
+      "avg_stress": 25
+     },
+     {
+      "date": "2024-02-03",
+      "resting_hr": 50,
+      "avg_stress": 25
+     },
+     {
+      "date": "2024-02-04",
+      "resting_hr": 58,
+      "avg_stress": 25
+     }
+    ]
+   },
+   "training_load": {
+    "unit": "trimp",
+    "ctl_days": 42,
+    "atl_days": 7,
+    "current": {
+     "date": "2024-02-05",
+     "ctl": 41.3,
+     "atl": 63.9,
+     "tsb": -31.4
+    },
+    "series": [
+     {
+      "date": "2024-01-01",
+      "load": 130.4,
+      "ctl": 3.1,
+      "atl": 17.4,
+      "tsb": 0.0
+     },
+     {
+      "date": "2024-01-02",
+      "load": 46.3,
+      "ctl": 4.1,
+      "atl": 21.2,
+      "tsb": -14.3
+     },
+     {
+      "date": "2024-01-03",
+      "load": 46.3,
+      "ctl": 5.1,
+      "atl": 24.6,
+      "tsb": -17.1
+     },
+     {
+      "date": "2024-01-04",
+      "load": 130.4,
+      "ctl": 8.0,
+      "atl": 38.6,
+      "tsb": -19.5
+     },
+     {
+      "date": "2024-01-05",
+      "load": 46.3,
+      "ctl": 8.9,
+      "atl": 39.7,
+      "tsb": -30.6
+     },
+     {
+      "date": "2024-01-06",
+      "load": 46.3,
+      "ctl": 9.8,
+      "atl": 40.6,
+      "tsb": -30.7
+     },
+     {
+      "date": "2024-01-07",
+      "load": 130.4,
+      "ctl": 12.6,
+      "atl": 52.5,
+      "tsb": -30.7
+     },
+     {
+      "date": "2024-01-08",
+      "load": 46.3,
+      "ctl": 13.4,
+      "atl": 51.7,
+      "tsb": -39.9
+     },
+     {
+      "date": "2024-01-09",
+      "load": 46.3,
+      "ctl": 14.2,
+      "atl": 51.0,
+      "tsb": -38.2
+     },
+     {
+      "date": "2024-01-10",
+      "load": 130.4,
+      "ctl": 16.9,
+      "atl": 61.5,
+      "tsb": -36.8
+     },
+     {
+      "date": "2024-01-11",
+      "load": 46.3,
+      "ctl": 17.6,
+      "atl": 59.5,
+      "tsb": -44.6
+     },
+     {
+      "date": "2024-01-12",
+      "load": 46.3,
+      "ctl": 18.3,
+      "atl": 57.8,
+      "tsb": -41.9
+     },
+     {
+      "date": "2024-01-13",
+      "load": 130.4,
+      "ctl": 20.9,
+      "atl": 67.4,
+      "tsb": -39.4
+     },
+     {
+      "date": "2024-01-14",
+      "load": 46.3,
+      "ctl": 21.5,
+      "atl": 64.6,
+      "tsb": -46.5
+     },
+     {
+      "date": "2024-01-15",
+      "load": 46.3,
+      "ctl": 22.1,
+      "atl": 62.2,
+      "tsb": -43.1
+     },
+     {
+      "date": "2024-01-16",
+      "load": 130.4,
+      "ctl": 24.7,
+      "atl": 71.3,
+      "tsb": -40.1
+     },
+     {
+      "date": "2024-01-17",
+      "load": 46.3,
+      "ctl": 25.2,
+      "atl": 67.9,
+      "tsb": -46.6
+     },
+     {
+      "date": "2024-01-18",
+      "load": 46.3,
+      "ctl": 25.7,
+      "atl": 65.1,
+      "tsb": -42.8
+     },
+     {
+      "date": "2024-01-19",
+      "load": 130.4,
+      "ctl": 28.1,
+      "atl": 73.8,
+      "tsb": -39.4
+     },
+     {
+      "date": "2024-01-20",
+      "load": 46.3,
+      "ctl": 28.6,
+      "atl": 70.1,
+      "tsb": -45.6
+     },
+     {
+      "date": "2024-01-21",
+      "load": 46.3,
+      "ctl": 29.0,
+      "atl": 66.9,
+      "tsb": -41.5
+     },
+     {
+      "date": "2024-01-22",
+      "load": 130.4,
+      "ctl": 31.4,
+      "atl": 75.4,
+      "tsb": -37.9
+     },
+     {
+      "date": "2024-01-23",
+      "load": 46.3,
+      "ctl": 31.7,
+      "atl": 71.5,
+      "tsb": -44.0
+     },
+     {
+      "date": "2024-01-24",
+      "load": 46.3,
+      "ctl": 32.1,
+      "atl": 68.2,
+      "tsb": -39.8
+     },
+     {
+      "date": "2024-01-25",
+      "load": 130.4,
+      "ctl": 34.4,
+      "atl": 76.4,
+      "tsb": -36.1
+     },
+     {
+      "date": "2024-01-26",
+      "load": 46.3,
+      "ctl": 34.7,
+      "atl": 72.4,
+      "tsb": -42.1
+     },
+     {
+      "date": "2024-01-27",
+      "load": 46.3,
+      "ctl": 34.9,
+      "atl": 69.0,
+      "tsb": -37.8
+     },
+     {
+      "date": "2024-01-28",
+      "load": 130.4,
+      "ctl": 37.2,
+      "atl": 77.1,
+      "tsb": -34.0
+     },
+     {
+      "date": "2024-01-29",
+      "load": 46.3,
+      "ctl": 37.4,
+      "atl": 73.0,
+      "tsb": -40.0
+     },
+     {
+      "date": "2024-01-30",
+      "load": 46.3,
+      "ctl": 37.6,
+      "atl": 69.5,
+      "tsb": -35.6
+     },
+     {
+      "date": "2024-01-31",
+      "load": 130.4,
+      "ctl": 39.8,
+      "atl": 77.6,
+      "tsb": -31.9
+     },
+     {
+      "date": "2024-02-01",
+      "load": 46.3,
+      "ctl": 39.9,
+      "atl": 73.4,
+      "tsb": -37.8
+     },
+     {
+      "date": "2024-02-02",
+      "load": 46.3,
+      "ctl": 40.1,
+      "atl": 69.8,
+      "tsb": -33.5
+     },
+     {
+      "date": "2024-02-03",
+      "load": 130.4,
+      "ctl": 42.2,
+      "atl": 77.9,
+      "tsb": -29.7
+     },
+     {
+      "date": "2024-02-04",
+      "load": 46.3,
+      "ctl": 42.3,
+      "atl": 73.7,
+      "tsb": -35.7
+     },
+     {
+      "date": "2024-02-05",
+      "load": 0.0,
+      "ctl": 41.3,
+      "atl": 63.9,
+      "tsb": -31.4
+     }
+    ],
+    "coverage": {
+     "activities": 35,
+     "scored": 35,
+     "basis": {
+      "power": 0,
+      "hr": 35,
+      "duration": 0
+     }
+    },
+    "needs": []
+   },
+   "coach_state": {
+    "as_of": "2024-02-05",
+    "unit": "trimp",
+    "ctl": 41.3,
+    "atl": 63.9,
+    "tsb": -31.4,
+    "ramp_rate": 3.9,
+    "acwr": 0.89,
+    "acwr_zone": "sweet_spot",
+    "monotony": 1.42,
+    "strain": 633.0,
+    "days_since_hard": 2,
+    "last_hard_date": "2024-02-03",
+    "readiness": {
+     "date": "2024-02-04",
+     "resting_hr": 58,
+     "baseline_resting_hr": 50,
+     "rhr_delta": 8,
+     "avg_stress": 25,
+     "fresh": false,
+     "basis": "wellness:resting_hr+stress"
+    },
+    "history_days": 36,
+    "coverage": {
+     "activities": 35,
+     "scored": 35,
+     "basis": {
+      "power": 0,
+      "hr": 35,
+      "duration": 0
+     }
+    },
+    "needs": [],
+    "notes": [
+     "ACWR is a useful but contested signal -- treat it as one input, not a verdict.",
+     "Fitness (CTL) is still warming up in the first ~6 weeks of history (understated)."
+    ]
+   }
+  },
+  {
+   "name": "empty_history",
+   "input": {
+    "activities": [],
+    "athlete": {
+     "max_heart_rate": 190,
+     "resting_heart_rate": 50
+    },
+    "as_of": "2024-02-05",
+    "wellness": []
+   },
+   "training_load": {
+    "unit": "tss",
+    "ctl_days": 42,
+    "atl_days": 7,
+    "current": null,
+    "series": [],
+    "coverage": {
+     "activities": 0,
+     "scored": 0,
+     "basis": {
+      "power": 0,
+      "hr": 0,
+      "duration": 0
+     }
+    },
+    "needs": []
+   },
+   "coach_state": {
+    "as_of": "2024-02-05",
+    "unit": "tss",
+    "ctl": null,
+    "atl": null,
+    "tsb": null,
+    "ramp_rate": null,
+    "acwr": null,
+    "acwr_zone": null,
+    "monotony": null,
+    "strain": null,
+    "days_since_hard": null,
+    "last_hard_date": null,
+    "readiness": null,
+    "history_days": 0,
+    "coverage": {
+     "activities": 0,
+     "scored": 0,
+     "basis": {
+      "power": 0,
+      "hr": 0,
+      "duration": 0
+     }
+    },
+    "needs": [],
+    "notes": [
+     "No scored activities yet -- import history to start coaching."
+    ]
+   }
+  }
+ ]
+}
