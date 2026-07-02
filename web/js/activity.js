@@ -23,12 +23,16 @@ const ActivityView = (() => {
     root.appendChild(U.el("a", { class: "back-link", href: "#/dashboard", html:
       '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg> Dashboard' }));
 
+    const manual = (a.extra && a.extra.source) === "manual";
+    const manualLabel = manual && a.extra.label ? ` — ${a.extra.label}` : "";
     root.appendChild(U.el("div", { class: "page-head" }, [
       U.el("div", {}, [
         U.el("h1", { text: `${U.cap(a.sport || "Activity")}${a.sub_sport && a.sub_sport !== "generic" ? " · " + U.cap(a.sub_sport) : ""}` }),
-        U.el("div", { class: "sub", text: `${U.fmtDateTime(a.start_time)}  ·  ${a.device_manufacturer || ""} ${a.device_product || ""}`.trim() }),
+        U.el("div", { class: "sub", text: manual
+          ? `${U.fmtDateTime(a.start_time)}  ·  logged manually${manualLabel}`
+          : `${U.fmtDateTime(a.start_time)}  ·  ${a.device_manufacturer || ""} ${a.device_product || ""}`.trim() }),
       ]),
-      U.el("div", { class: "head-actions" }, exportControls(a)),
+      U.el("div", { class: "head-actions" }, manual ? [deleteControl(a), ...exportControls(a)] : exportControls(a)),
     ]));
 
     root.appendChild(metaGrid(a));
@@ -440,6 +444,25 @@ const ActivityView = (() => {
       ]),
       U.el("div", { class: "zone-list" }, rows),
     ]);
+  }
+
+  // Manual entries are the only deletable activities (typos happen); imported
+  // watch data is immutable-by-default and gets no delete control.
+  function deleteControl(a) {
+    return U.el("button", { class: "btn sm", text: "Delete entry",
+      title: "Remove this manually logged activity",
+      onclick: async (e) => {
+        if (!confirm("Delete this manually logged activity? This cannot be undone.")) return;
+        e.target.disabled = true;
+        try {
+          await API.deleteActivity(a.id);
+          U.toast("Manual entry deleted.", "good");
+          location.hash = "#/dashboard";
+        } catch (err) {
+          e.target.disabled = false;
+          U.toast("Could not delete: " + err.message, "bad");
+        }
+      } });
   }
 
   function exportControls(a) {

@@ -15,10 +15,15 @@ const Dashboard = (() => {
         U.el("div", { class: "sub", id: "dash-sub", text: "Your local activity library" }),
       ]),
       U.el("div", { class: "head-actions" }, [
+        U.el("button", { class: "btn", text: "Log activity", title: "Hand-log a session no watch recorded",
+          onclick: () => { const c = document.getElementById("log-card"); if (c) c.hidden = !c.hidden; } }),
         U.el("a", { class: "btn primary", href: "#/sync", html:
           '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg> Sync now' }),
       ]),
     ]));
+
+    // manual entry (hidden until "Log activity" is clicked)
+    root.appendChild(logCard());
 
     // stat tiles
     const tiles = U.el("div", { class: "stats", id: "tiles", style: "margin-bottom:var(--sp-5)" });
@@ -40,6 +45,54 @@ const Dashboard = (() => {
 
     U.setView(root);
     await Promise.all([loadStats(), loadActivities()]);
+  }
+
+  // ---- manual entry: log a session no watch recorded ----
+  function logCard() {
+    const card = U.el("div", { class: "card", id: "log-card", style: "margin-bottom:var(--sp-4);padding:var(--sp-4)" });
+    card.hidden = true;
+    const sport = U.el("input", { class: "input sm", list: "log-sports", value: "strength_training" });
+    const sportsList = U.el("datalist", { id: "log-sports" },
+      ["strength_training", "taichi", "walking", "yoga", "pilates", "cycling", "swimming", "rowing"]
+        .map((s) => U.el("option", { value: s })));
+    const date = U.el("input", { class: "input sm", type: "date", value: new Date().toISOString().slice(0, 10) });
+    const mins = U.el("input", { class: "input sm", type: "number", min: "1", max: "1440", value: "30" });
+    const hr = U.el("input", { class: "input sm", type: "number", min: "30", max: "250", placeholder: "optional" });
+    const label = U.el("input", { class: "input sm", type: "text", placeholder: "e.g. Home session", maxlength: "120" });
+    const field = (l, node) => U.el("label", { class: "coach-field" }, [U.el("span", { class: "coach-field-l", text: l }), node]);
+
+    const save = U.el("button", { class: "btn primary", text: "Log it" });
+    save.onclick = async () => {
+      save.disabled = true;
+      try {
+        await API.logManualActivity({
+          sport: sport.value, duration_min: Number(mins.value) || 0,
+          start_time: date.value ? date.value + "T12:00:00" : null,
+          avg_heart_rate: hr.value ? Number(hr.value) : null,
+          label: label.value || null,
+        });
+        U.toast("Logged — it now counts toward your training load.", "good");
+        card.hidden = true;
+        await Promise.all([loadStats(), loadActivities()]);
+      } catch (e) {
+        U.toast("Could not log: " + e.message, "bad");
+      }
+      save.disabled = false;
+    };
+
+    card.append(
+      U.el("h3", { style: "font-size:14px;color:var(--text-dim);margin:0 0 var(--sp-3)", text: "Log an activity (no watch data)" }),
+      sportsList,
+      U.el("div", { class: "coach-form" }, [
+        field("Sport", sport), field("Date", date), field("Minutes", mins),
+        field("Avg HR", hr), field("Label", label),
+      ]),
+      U.el("div", { style: "margin-top:var(--sp-3);display:flex;gap:var(--sp-2);align-items:center" }, [
+        save,
+        U.el("span", { class: "set-hint", text: "Manual entries count toward training load and can be deleted from their activity page." }),
+      ]),
+    );
+    return card;
   }
 
   function buildFilters() {

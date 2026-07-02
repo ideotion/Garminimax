@@ -115,7 +115,10 @@ const TaiChiView = (() => {
   function startSession(session) {
     const host = U.el("div");
     U.setView(host);
-    SessionPlayer.create(host, session, { title: "Tai Chi flow", onExit: render });
+    SessionPlayer.create(host, session, {
+      title: "Tai Chi flow", onExit: render,
+      onComplete: (doneEl, s) => doneEl.append(U.logSessionButton("taichi", s, "Tai Chi flow")),
+    });
   }
 
   function builderCard() {

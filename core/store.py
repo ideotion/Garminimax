@@ -452,6 +452,16 @@ class Store:
             cur = self.conn.execute("DELETE FROM segments WHERE id = ?", (segment_id,))
         return cur.rowcount > 0
 
+    def delete_activity(self, activity_id: int) -> bool:
+        """Delete an activity row (laps/trackpoints cascade). Returns True if it existed.
+
+        Intended for hand-logged (manual) entries -- the API restricts deletion to
+        those; imported watch data stays immutable-by-default.
+        """
+        with self.conn:
+            cur = self.conn.execute("DELETE FROM activities WHERE id = ?", (activity_id,))
+        return cur.rowcount > 0
+
     def summary_stats(self) -> dict[str, Any]:
         """Aggregate totals for the dashboard header."""
         row = self.conn.execute(

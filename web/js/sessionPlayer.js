@@ -3,7 +3,9 @@
    countdown between sets/exercises, a progress indicator ("3 / 8"), and a
    completion summary. Offline, keyboard-operable, themed from CSS tokens.
 
-   SessionPlayer.create(hostEl, session, { title, onExit }) -> { destroy } */
+   SessionPlayer.create(hostEl, session, { title, onExit, onComplete }) -> { destroy }
+   onComplete(doneEl, session) fires once on the completion screen, letting the
+   host append follow-ups (e.g. a "log to archive" button). */
 const SessionPlayer = (() => {
   const REST_BETWEEN_SETS = 20;       // seconds
   const REST_BETWEEN_EXERCISES = 30;  // seconds
@@ -102,6 +104,9 @@ const SessionPlayer = (() => {
       const list = el("ul", "sp-done-list");
       items.forEach((i) => list.append(el("li", null, `${i.name}${i.sets > 1 ? ` × ${i.sets}` : ""}`)));
       done.append(list);
+      // Hosts may add follow-ups to the completion panel (e.g. "log to archive").
+      // Guarded: a host callback bug must never break the player.
+      if (opts.onComplete) { try { opts.onComplete(done, session); } catch (_) { /* noop */ } }
       const again = el("button", "btn", "Back");
       again.onclick = () => { destroy(); onExit(); };
       done.append(again);

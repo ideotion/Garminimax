@@ -26,6 +26,17 @@ class CoachPlanRequest(BaseModel):
     level: str = Field(default="intermediate", pattern="^(beginner|intermediate|advanced)$")
 
 
+class ManualActivityRequest(BaseModel):
+    """Hand-log an activity no watch recorded (strength, Tai Chi flow, ...)."""
+
+    sport: str = Field(min_length=1, max_length=40)
+    duration_min: float = Field(gt=0, le=24 * 60)
+    start_time: str | None = None  # ISO datetime; defaults to now (UTC)
+    avg_heart_rate: int | None = Field(default=None, ge=30, le=250)
+    total_calories: int | None = Field(default=None, ge=0)
+    label: str | None = Field(default=None, max_length=120)
+
+
 class Stats(BaseModel):
     count: int
     total_distance_m: float
