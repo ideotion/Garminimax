@@ -39,7 +39,7 @@ _RACE_DISTANCES: tuple[tuple[float, str], ...] = (
 )
 
 
-def _vdot(distance_m: float, time_s: float) -> float | None:
+def vdot_for_effort(distance_m: float, time_s: float) -> float | None:
     """Daniels–Gilbert VDOT (≈ VO₂max, ml/kg/min) for a distance/time effort."""
     if distance_m <= 0 or time_s <= 0:
         return None
@@ -95,8 +95,8 @@ def compute_race_predictions(activity: Activity) -> dict:
     if not candidates:
         return _empty()
 
-    ref = max(candidates, key=lambda e: _vdot(e["distance_m"], e["time_s"]) or 0.0)
-    vo2 = _vdot(ref["distance_m"], ref["time_s"])
+    ref = max(candidates, key=lambda e: vdot_for_effort(e["distance_m"], e["time_s"]) or 0.0)
+    vo2 = vdot_for_effort(ref["distance_m"], ref["time_s"])
 
     predictions = []
     for dist, label in _RACE_DISTANCES:

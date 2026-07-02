@@ -36,6 +36,7 @@ from core.export import (
     activity_to_dict,
     activity_trackpoints_csv,
 )
+from core.fitness_trend import compute_fitness_trend
 from core.hr_trends import compute_hr_trends
 from core.logging_setup import read_recent_logs
 from core.metrics import compute_activity_metrics
@@ -274,6 +275,17 @@ def insights_privacy_audit(
         and audit["recommended_radius_m"] > 0
     )
     return audit
+
+
+@router.get("/insights/fitness")
+def insights_fitness(store: Store = Depends(get_store)) -> dict:
+    """Running-fitness (VO₂max/VDOT) trend across the whole history.
+
+    Whole-run estimates from activity summaries only (one query, no per-activity
+    trackpoint load), tracked as a rolling 90-day demonstrated-fitness envelope.
+    Running-only; an open local model, not Garmin's FirstBeat figure.
+    """
+    return compute_fitness_trend(store.all_activities(with_series=False))
 
 
 @router.get("/insights/hr-trends")

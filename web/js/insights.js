@@ -9,6 +9,7 @@ const Insights = (() => {
   let wellness = null;  // daily wellness/readiness from monitoring files
   let dups = null;      // cross-source duplicate report
   let records = null;   // all-time best times per distance
+  let fitness = null;   // running-fitness (VDOT) trend envelope
 
   async function render() {
     Charts.destroyAll();
@@ -25,6 +26,7 @@ const Insights = (() => {
     try { wellness = await API.wellness(); } catch (_) { wellness = null; }
     try { dups = await API.duplicates(); } catch (_) { dups = null; }
     try { records = await API.records(state.sport || undefined); } catch (_) { records = null; }
+    try { fitness = await API.fitnessTrend(); } catch (_) { fitness = null; }
     if (!data.years.includes(state.year)) state.year = data.years[data.years.length - 1] || "";
     draw();
   }
@@ -46,6 +48,8 @@ const Insights = (() => {
     if (bt) root.appendChild(bt);
     const tl = trainingLoadCard();
     if (tl) root.appendChild(tl);
+    const fc = fitnessCard();
+    if (fc) root.appendChild(fc);
     const hrc = hrTrendsCard();
     if (hrc) root.appendChild(hrc);
     const wc = wellnessCard();
@@ -61,6 +65,7 @@ const Insights = (() => {
       Charts.applyTheme();
       buildEvolutionCharts();
       buildTrainingLoad();
+      buildFitness();
       buildHrTrends();
       buildWellness();
     });
@@ -227,6 +232,52 @@ const Insights = (() => {
   }
 
   // ---- heart-rate & efficiency trends ----
+  // ---- running fitness (VO2max/VDOT) trend ----
+  function fitnessCard() {
+    if (!fitness || !fitness.available) return null;  // hide until a run qualifies
+    const cur = fitness.current || {};
+    const best = fitness.all_time_best || {};
+    const tiles = U.el("div", { class: "stats" });
+    const tile = (label, value) =>
+      tiles.appendChild(U.el("div", { class: "tile" }, [
+        U.el("div", { class: "label", text: label }),
+        U.el("div", { class: "value tnum", text: value }),
+      ]));
+    tile("Current (90-day)", fmt1(cur.vdot));
+    tile("All-time best", fmt1(best.vdot));
+    tile("~30-day change", fitness.delta_30d === null || fitness.delta_30d === undefined
+      ? "—" : (fitness.delta_30d > 0 ? "+" : "") + fitness.delta_30d);
+
+    return U.el("div", { class: "card pad", style: "margin-bottom:var(--sp-5)" }, [
+      U.el("div", { class: "cal-head" }, [
+        U.el("h3", { style: "font-size:14px;color:var(--text-dim)", text: "Running fitness (VO₂max estimate)" }),
+        U.el("div", { class: "sub", style: "color:var(--text-dim);font-size:13px", text: `VDOT · ${fitness.points.length} runs` }),
+      ]),
+      tiles,
+      U.el("div", { class: "chart-box", style: "height:260px;margin-top:var(--sp-4)" }, [U.el("canvas", { id: "fit-canvas" })]),
+      U.el("div", { style: "margin-top:var(--sp-3);font-size:12px;color:var(--text-faint);line-height:1.5",
+        text: (fitness.notes || []).join(" ") }),
+    ]);
+  }
+
+  function buildFitness() {
+    if (!fitness || !fitness.available) return;
+    const canvas = document.getElementById("fit-canvas");
+    if (!canvas) return;
+    // One row per active date: the envelope line plus that day's best single run.
+    const byDate = {};
+    fitness.points.forEach((p) => {
+      if (!(p.date in byDate) || p.vdot > byDate[p.date]) byDate[p.date] = p.vdot;
+    });
+    const labels = fitness.envelope.map((e) => e.date);
+    Charts.makeMultiLine(canvas, labels, [
+      { label: "Demonstrated fitness (90-day best)", data: fitness.envelope.map((e) => e.vdot),
+        color: U.cssVar("--accent"), fill: true },
+      { label: "Per-run estimate", data: labels.map((d) => byDate[d] ?? null),
+        color: U.cssVar("--text-faint"), dashed: true },
+    ]);
+  }
+
   function hrTrendsCard() {
     if (!hr || !hr.points || !hr.points.length) return null;  // hide when no HR data
     const s = hr.summary || {};
