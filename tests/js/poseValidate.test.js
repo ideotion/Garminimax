@@ -70,26 +70,37 @@ test("PR7: a denormalized quaternion fails with a 'quat' issue", () => {
   assert.ok(!res.ok && res.issues.some((i) => i.kind === "quat" && i.detail.includes("thighR")));
 });
 
-test("PR7: an extreme unsupported backward lean fails the balance check", () => {
-  // Backward, not forward: toes extend the support forward (a human really can
-  // lean far toward their toes), but nothing extends behind the ankles.
+test("PR7: an off-base kneeling lean fails the balance check", () => {
+  // The bounded weight-shift correctly balances any FOOT-supported lean (a real
+  // person shifts their weight over their stance) — so the genuinely
+  // unbalanceable case is a NON-foot support the shift deliberately leaves
+  // alone: kneeling (knees on the floor, feet lifted) thrown back past the
+  // knees. The COM sits well behind the only contacts.
+  const rot = (axis, deg) => P.axisAngleQuat(axis, deg * Math.PI / 180);
   const pose = identityPose();
-  const a = (-80 * Math.PI / 180) / 2;
-  pose.lumbar = [Math.sin(a), 0, 0, Math.cos(a)];      // trunk pitched ~80deg back, feet planted
+  pose.__root = [0, 46, 0];
+  pose.shinL = rot([1, 0, 0], 130); pose.shinR = rot([1, 0, 0], 130);  // fold feet up behind
+  pose.lumbar = rot([1, 0, 0], -45);                                    // lean back past the knees
   const res = PV.validatePose(pose);
-  assert.ok(!res.ok && res.issues.some((i) => i.kind === "balance"), JSON.stringify(res.issues));
-  // ...and the same pose passes when externally supported (hands on a wall).
-  const braced = PV.validatePose(pose, { supported: true });
-  assert.ok(!braced.issues.some((i) => i.kind === "balance"));
+  assert.ok(res.issues.some((i) => i.kind === "balance"), JSON.stringify(res.issues));
+  // ...and it clears when externally braced (a hand on a chair).
+  assert.ok(!PV.validatePose(pose, { supported: true }).issues.some((i) => i.kind === "balance"));
 });
 
-test("PR7: toes-up feet push the ankles through the floor -> 'pierce'", () => {
+test("PR7: toes-up feet now plant the heel cleanly (no pierce)", () => {
+  // Regression: this pose used to drive the ankles through the floor. Grounding
+  // on the full contact-candidate set now lands the heel on the floor with the
+  // toes lifted (a real toes-up foot), so nothing pierces.
   const pose = identityPose();
   const a = (-50 * Math.PI / 180) / 2;                 // pitch both feet toes-up
   pose.footL = [Math.sin(a), 0, 0, Math.cos(a)];
   pose.footR = [Math.sin(a), 0, 0, Math.cos(a)];
   const res = PV.validatePose(pose);
-  assert.ok(res.issues.some((i) => i.kind === "pierce"), JSON.stringify(res.issues));
+  assert.ok(!res.issues.some((i) => i.kind === "pierce"), JSON.stringify(res.issues));
+  const jp = P.forwardKinematics(pose, { ground: true });
+  let low = Infinity;
+  for (const n of P.CONTACT_CANDIDATES) if (jp[n]) low = Math.min(low, jp[n][1]);
+  assert.ok(Math.abs(low - P.GROUND_Y) <= 0.5, "a contact should rest on the floor");
 });
 
 test("PR7: the identity standing pose validates clean", () => {
@@ -98,32 +109,43 @@ test("PR7: the identity standing pose validates clean", () => {
 });
 
 // ------------------------------ content ratchet ----------------------------- //
-// Known-defective movements, with the ROOT CAUSE named. These are real findings
-// the validator surfaced in shipped content — not validator bugs:
-//   balance — the authored 2-D motion never shifts the COM over the stance leg
-//             (single-support phases stand on one foot with the body centered);
-//             fixed by weight-shift authoring (roadmap grace/sequencing pack).
-//   pierce  — floor/prone poses lack hand/knee contact anchoring, and heel-rock
-//             movements have no heel contact joint; fixed by the contact schema
-//             (roadmap 5.6) and a heel contact point.
+// Known-defective movements, with the ROOT CAUSE named. The engine's grounding
+// (full contact-candidate set), resting-pitch/heel-plant, bridge ankle-IK and
+// the bounded weight-shift resolved twelve of the original fourteen waivers —
+// carries, marches, heel-rocks, kneeling planks, prone lifts and supine bridges
+// now validate. The two that remain share one root cause:
+//   balance — the 2-D SIDE-view art draws the torso at a height where the
+//             fixed-length arms cannot reach the floor, so the hands float and
+//             the base collapses to the feet alone while the body is horizontal
+//             ahead of them. This needs either hand-authored `poses3d` for these
+//             two, or a coupled two-end (hands+feet) full-body IK — both are a
+//             visual-pass follow-up, not a math fix.
 // The list may only SHRINK: fixing a movement makes the stale-waiver guard fail
 // until its entry is deleted. limit/quat issues are NEVER waivable.
 const WAIVED = {
-  "towel-hamstring-slider": ["pierce", "balance"],
-  "knee-pushup": ["pierce"],
   "full-pushup": ["balance"],
-  "prone-ytw": ["pierce", "balance"],
-  "water-bottle-carry": ["balance"],
-  "backpack-carry": ["balance"],
-  "suitcase-carry": ["balance"],
-  "heel-to-toe-walk": ["balance"],
-  "marching-in-place": ["balance"],
-  "knee-plank": ["pierce", "balance"],
   "full-plank": ["balance"],
-  "tc_heel_toe_raises": ["pierce"],
-  "tc_seated_marching": ["pierce"],
-  "tc_ankle_calf_pumps": ["pierce"],
 };
+
+// The twelve movements the engine improvements pulled out of the waiver list;
+// named explicitly so a geometry regression on any of them is legible, not just
+// a count change in the ratchet above.
+const FORMERLY_WAIVED = [
+  "towel-hamstring-slider", "knee-pushup", "prone-ytw", "water-bottle-carry",
+  "backpack-carry", "suitcase-carry", "heel-to-toe-walk", "marching-in-place",
+  "knee-plank", "tc_heel_toe_raises", "tc_seated_marching", "tc_ankle_calf_pumps",
+];
+
+test("PR7: the twelve engine-fixed movements validate clean", () => {
+  const byId = Object.fromEntries(allMovements().map((e) => [e.id, e]));
+  for (const id of FORMERLY_WAIVED) {
+    const ex = byId[id];
+    assert.ok(ex, `unknown movement ${id}`);
+    assert.ok(!WAIVED[id], `${id} should no longer be waived`);
+    const res = PV.validateExercise(ex);
+    assert.ok(res.ok, `${id} regressed: ${res.issues.map((i) => `${i.kind}@${i.phase}`).join(", ")}`);
+  }
+});
 
 test("PR7: every non-waived movement passes the full validator", () => {
   const failures = [];

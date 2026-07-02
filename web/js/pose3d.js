@@ -151,6 +151,58 @@
 
   const GROUND_Y = 0; // world height of the floor (rest feet sit here)
 
+  // Joints that may legitimately bear on the floor. Grounding aligns the lowest
+  // of these to the floor plane (feet in standing work; hands/knees/hips in
+  // floor work; shoulders/head in lying work), so no pose can pierce the ground
+  // it rests on and the base of support reflects what actually touches.
+  const CONTACT_CANDIDATES = [
+    "footL", "footR", "toeL", "toeR", "ankleL", "ankleR",
+    "handL", "handR", "kneeL", "kneeR", "hips",
+    "shoulderL", "shoulderR", "head", "spine",
+  ];
+  // Joints snapped exactly onto the floor when they land this close to it
+  // (world units; ~1 unit = 9 mm). Art keyframes are impressionistic — a
+  // push-up hand or a bridging shoulder authored a few units up must still
+  // PLANT, not hover. Bounded: the largest possible capsule distortion is
+  // CONTACT_SNAP (~7 cm), and it only ever moves a joint DOWN onto the floor.
+  const CONTACT_SNAP = 8.0;
+  const _SNAP_ENDS = ["handL", "handR", "toeL", "toeR", "footL", "footR",
+    "ankleL", "ankleR", "shoulderL", "shoulderR", "head"];
+
+  // ---- Dempster/Winter body-segment parameters ------------------------------
+  // The skeleton's mass model (fraction of body mass, COM as a fraction of the
+  // segment from the proximal joint) — Dempster via Winter, Table 4.1. Lives in
+  // the motion core because balance is a property of the BODY, not the checker;
+  // poseValidate delegates here. Masses sum to 1.000.
+  const SEGMENTS = [
+    { name: "trunk", from: "hips", to: "neckBase", mass: 0.497, com: 0.50 },
+    { name: "headNeck", from: "head", to: "head", mass: 0.081, com: 0 },
+    { name: "thighL", from: "hipL", to: "kneeL", mass: 0.100, com: 0.433 },
+    { name: "thighR", from: "hipR", to: "kneeR", mass: 0.100, com: 0.433 },
+    { name: "shankL", from: "kneeL", to: "ankleL", mass: 0.0465, com: 0.433 },
+    { name: "shankR", from: "kneeR", to: "ankleR", mass: 0.0465, com: 0.433 },
+    { name: "footL", from: "ankleL", to: "toeL", mass: 0.0145, com: 0.50 },
+    { name: "footR", from: "ankleR", to: "toeR", mass: 0.0145, com: 0.50 },
+    { name: "upperArmL", from: "shoulderL", to: "elbowL", mass: 0.028, com: 0.436 },
+    { name: "upperArmR", from: "shoulderR", to: "elbowR", mass: 0.028, com: 0.436 },
+    { name: "forearmHandL", from: "elbowL", to: "handL", mass: 0.022, com: 0.682 },
+    { name: "forearmHandR", from: "elbowR", to: "handR", mass: 0.022, com: 0.682 },
+  ];
+
+  // Whole-body center of mass from world joint positions (weighted segment sum).
+  function centerOfMass(jp) {
+    let m = 0;
+    const c = [0, 0, 0];
+    for (const s of SEGMENTS) {
+      const a = jp[s.from], b = jp[s.to];
+      if (!a || !b) continue;
+      const p = [a[0] + (b[0] - a[0]) * s.com, a[1] + (b[1] - a[1]) * s.com, a[2] + (b[2] - a[2]) * s.com];
+      c[0] += p[0] * s.mass; c[1] += p[1] * s.mass; c[2] += p[2] * s.mass;
+      m += s.mass;
+    }
+    return m > 0 ? [c[0] / m, c[1] / m, c[2] / m] : [0, 0, 0];
+  }
+
   // ---- joint limits --------------------------------------------------------
   // Per-bone maximum SWING (degrees) of the local rotation from its rest
   // direction, used as a hard clamp. Ceilings are the AAOS clinical max/normal
@@ -302,21 +354,281 @@
     jointPos.hipL = V.add(jointPos.hips, V.sub(REST.hipL, REST.hips));
     jointPos.hipR = V.add(jointPos.hips, V.sub(REST.hipR, REST.hips));
 
-    // Foot grounding (opt-in): translate the whole skeleton so the lowest foot
-    // contact (heel-side foot joints or the toes) rests on the world ground
-    // plane. With the pelvis pinned high (PR1) and the legs bent, this is what
-    // pulls the body down into a squat and stops the feet floating — without
-    // touching any authored bone angle.
+    // Grounding (opt-in): translate the whole skeleton so its lowest legitimate
+    // contact — feet in standing work, hands/knees/hips in floor and prone work
+    // — rests exactly on the ground plane. This is what pulls the body down into
+    // a squat AND what stops a push-up's hands or a kneeling shin piercing the
+    // floor, without touching any authored bone angle.
     if (opts.ground) {
-      const feet = [jointPos.footL, jointPos.footR, jointPos.toeL, jointPos.toeR].filter(Boolean);
-      if (feet.length) {
-        const shift = GROUND_Y - Math.min(...feet.map((f) => f[1]));
-        if (Math.abs(shift) > 1e-9) {
-          for (const k in jointPos) jointPos[k] = [jointPos[k][0], jointPos[k][1] + shift, jointPos[k][2]];
-        }
+      let low = Infinity;
+      for (const n of CONTACT_CANDIDATES) if (jointPos[n] && jointPos[n][1] < low) low = jointPos[n][1];
+      if (low < Infinity && Math.abs(GROUND_Y - low) > 1e-9) {
+        const shift = GROUND_Y - low;
+        for (const k in jointPos) jointPos[k] = [jointPos[k][0], jointPos[k][1] + shift, jointPos[k][2]];
+      }
+      // Contact snap: chain-end joints that land within CONTACT_SNAP of the
+      // floor are planted exactly on it. Art keyframes are impressionistic —
+      // this turns "nearly touching" into a real contact (bearing on the base
+      // of support) at the cost of an imperceptible (<8-unit) capsule stretch.
+      for (const n of _SNAP_ENDS) {
+        const p = jointPos[n];
+        if (p && p[1] > GROUND_Y && p[1] <= GROUND_Y + CONTACT_SNAP) p[1] = GROUND_Y;
+      }
+      // Resting pitch: the fixed-length skeleton leaves floor-facing joints
+      // hovering where the foreshortened art put them near (but not on) the
+      // floor. Real bodies pivot about what already touches — a push-up about
+      // its toes, a bridge about its planted hands, a prone lift about its
+      // hips — so rigidly pitch the whole body about the grounded contact line
+      // until the resting side touches too. Pure rotation: every bone length
+      // and authored angle is preserved.
+      _restingPitch(jointPos);
+      // Balance (opt-in): in single-support standing poses the authored 2-D art
+      // keeps the body centered, which would topple a real human. Shift the
+      // pelvis (and everything not planted) so the centre of mass moves over
+      // the base of support, keeping planted feet fixed via two-bone leg IK.
+      if (opts.balance) {
+        balanceAdjust(jointPos);
+        // Safety: the weight-shift's small pelvis drop must never leave a
+        // contact candidate under the floor. Re-lift if it did.
+        let low2 = Infinity;
+        for (const n of CONTACT_CANDIDATES) if (jointPos[n] && jointPos[n][1] < low2) low2 = jointPos[n][1];
+        if (low2 < GROUND_Y) for (const k in jointPos) jointPos[k] = [jointPos[k][0], jointPos[k][1] + (GROUND_Y - low2), jointPos[k][2]];
       }
     }
     return jointPos;
+  }
+
+  // A resting-side joint hovering within this height of the floor (but beyond
+  // snap range) can be pitched down onto it. Higher joints (a standing fold's
+  // hands at knee height, a marching swing foot) never trigger a pitch.
+  const _PLANT_MAX = 30.0;
+  const _BAL_CONTACT_TOL = 3.0;
+  const _LYING_HEAD_MAX = 60.0;  // a head this low means the body is lying down
+
+  function _grounded(jp) {
+    const out = [];
+    for (const n of CONTACT_CANDIDATES) {
+      const p = jp[n];
+      if (p && p[1] <= GROUND_Y + _BAL_CONTACT_TOL) out.push(n);
+    }
+    return out;
+  }
+
+  // A resting pitch is a small correction by nature: art that needs more than
+  // this to plant a joint is not a rigid-pitch case (pivoting would deform the
+  // pose into nonsense), so the solve becomes a no-op instead.
+  const _PITCH_MAX_RAD = 15 * _RAD;
+
+  // Rigid rotation about the world-X line through `pivot` planting `target`
+  // (both are joint positions). Preserves every bone length; afterwards the
+  // planted ends are re-snapped and nothing is left under the floor.
+  // Returns true when applied, false when the needed angle exceeds the guard.
+  function _pitchAbout(jp, pivot, target) {
+    const dy = target[1] - pivot[1], dz = target[2] - pivot[2];
+    if (Math.abs(dz) < 1e-6) return false;
+    const theta = Math.atan(dy / dz);
+    if (Math.abs(theta) > _PITCH_MAX_RAD) return false;
+    const c = Math.cos(theta), s = Math.sin(theta);
+    for (const k in jp) {
+      const p = jp[k];
+      const ry = p[1] - pivot[1], rz = p[2] - pivot[2];
+      jp[k] = [p[0], pivot[1] + ry * c - rz * s, pivot[2] + ry * s + rz * c];
+    }
+    for (const n of _SNAP_ENDS) {
+      const p = jp[n];
+      if (p && p[1] > GROUND_Y && p[1] <= GROUND_Y + CONTACT_SNAP) p[1] = GROUND_Y;
+    }
+    let low = GROUND_Y;
+    for (const n of CONTACT_CANDIDATES) if (jp[n] && jp[n][1] < low) low = jp[n][1];
+    if (low < GROUND_Y) for (const k in jp) jp[k] = [jp[k][0], jp[k][1] + (GROUND_Y - low), jp[k][2]];
+    return true;
+  }
+
+  function _restingPitch(jp) {
+    const grounded = _grounded(jp);
+    if (!grounded.length) return;
+    const allFeet = grounded.every((n) => _FOOT_SET[n]);
+    const hover = (n, max) => {
+      const p = jp[n];
+      return p && p[1] > GROUND_Y + _BAL_CONTACT_TOL && p[1] <= GROUND_Y + max ? p : null;
+    };
+    const lowest = (names) => {
+      let best = null;
+      for (const n of names) { const p = jp[n]; if (p && (!best || p[1] < best[1])) best = p; }
+      return best;
+    };
+
+    // Case 1 — prone/plank: only the foot line touches, both hands hover low,
+    // below the hips. Pivot about the lowest foot contact to plant the hands.
+    if (allFeet) {
+      const hl = hover("handL", _PLANT_MAX), hr = hover("handR", _PLANT_MAX);
+      if (hl && hr && jp.hips[1] >= Math.max(hl[1], hr[1])) {
+        const pivot = lowest(grounded);
+        const target = hl[1] >= hr[1] ? hl : hr;     // plant the higher hand: both land
+        _pitchAbout(jp, pivot, target);
+      }
+      return;
+    }
+
+    // Only genuinely lying bodies beyond this point.
+    if (!jp.head || jp.head[1] > GROUND_Y + _LYING_HEAD_MAX) return;
+
+    // Case 2 — supine (bridge family): both hands rest on the floor beside the
+    // body. First lay the torso down (a small pitch about the hands planting
+    // the feet-side if that solves flat, else the shoulder line), then bend the
+    // knees to plant the heels — which is exactly what a bridge is.
+    const handsDown = grounded.includes("handL") && grounded.includes("handR");
+    if (handsDown) {
+      const feetT = lowest(["ankleL", "ankleR", "footL", "footR"].filter((n) => hover(n, _PLANT_MAX)));
+      if (!(feetT && _pitchAbout(jp, jp.handL, feetT))) {
+        const shT = lowest(["shoulderL", "shoulderR"].filter((n) => hover(n, _PLANT_MAX)));
+        if (shT) _pitchAbout(jp, jp.handL, shT);
+        _plantAnklesIK(jp);
+      }
+      return;
+    }
+
+    // Case 3 — prone lift (Y-T-W family): the hips bear the weight, the chest
+    // hovers. Pivot about the hips to rest the shoulder line on the floor.
+    if (grounded.includes("hips")) {
+      const target = lowest(["shoulderL", "shoulderR"].filter((n) => hover(n, _PLANT_MAX)));
+      if (target) _pitchAbout(jp, jp.hips, target);
+    }
+  }
+
+  // Bend the knees (two-bone IK, hips fixed) so hovering ankles reach the
+  // floor; the foot and toe ride along rigidly. Used for lying poses only —
+  // the heels are the working contact in a bridge, and the fixed-length
+  // skeleton leaves them a little high wherever the art foreshortened the leg.
+  function _plantAnklesIK(jp) {
+    for (const side of ["L", "R"]) {
+      const ankle = jp["ankle" + side], hip = jp["hip" + side];
+      if (!ankle || !hip) continue;
+      if (ankle[1] <= GROUND_Y + _BAL_CONTACT_TOL || ankle[1] > GROUND_Y + _PLANT_MAX) continue;
+      const target = [ankle[0], GROUND_Y, ankle[2]];
+      const l1 = BONE_LEN["thigh" + side], l2 = BONE_LEN["shin" + side];
+      if (V.len(V.sub(target, hip)) > l1 + l2 - 1) continue;   // out of reach: leave it
+      let pole = [0, 0, 1];
+      const kb = jp["knee" + side];
+      if (kb) {
+        const axis = V.norm(V.sub(ankle, hip));
+        const rel = V.sub(kb, hip);
+        const off = V.sub(rel, V.scale(axis, V.dot(rel, axis)));
+        if (V.len(off) > 1e-6) pole = off;
+      }
+      jp["knee" + side] = solveTwoBoneIK(hip, target, l1, l2, pole).knee;
+      const delta = V.sub(target, ankle);
+      jp["ankle" + side] = target;
+      for (const j of ["foot" + side, "toe" + side]) if (jp[j]) jp[j] = V.add(jp[j], delta);
+    }
+  }
+
+  // ---- automatic weight shift (standing single/double support) --------------
+  // Applies only when every floor contact is a foot-chain joint (never in prone
+  // or supported-floor work, where the hull already spans hands/knees/hips).
+  const _FOOT_SET = { footL: "L", footR: "R", toeL: "L", toeR: "R", ankleL: "L", ankleR: "R" };
+  const _BAL_TOL = 3.0;        // contact height tolerance (matches the validator)
+  const _BAL_TARGET = 6.0;     // pull the COM to within this of the support point
+  const _BAL_MAX_TOTAL = 18;   // cap on CUMULATIVE pelvis travel (world units, ~16 cm)
+
+  // Shift the pelvis so the whole-body COM moves over the base of support — the
+  // weight shift the authored 2-D art omits (it keeps single-support poses
+  // centered). Deliberately BOUNDED: a real weight shift onto the stance leg is
+  // a handful of centimetres, so cumulative travel is capped at _BAL_MAX_TOTAL.
+  // A pose that needs more than that to balance is genuinely off-balance and is
+  // left off-balance, so the plausibility validator can still flag it.
+  function balanceAdjust(jp) {
+    let traveled = 0;
+    for (let iter = 0; iter < 4; iter++) {
+      if (traveled >= _BAL_MAX_TOTAL - 0.5) return;
+      const contacts = [];
+      let nonFoot = false;
+      for (const n of CONTACT_CANDIDATES) {
+        const p = jp[n];
+        if (p && p[1] <= GROUND_Y + _BAL_TOL) {
+          if (!_FOOT_SET[n]) { nonFoot = true; break; }
+          contacts.push(p);
+        }
+      }
+      if (nonFoot || !contacts.length) return;
+
+      const com = centerOfMass(jp);
+      // Nearest support point: the closest point on the segment spanning the
+      // contact extremes (degenerates to the single contact when alone).
+      let ax = contacts[0][0], az = contacts[0][2], bx = ax, bz = az;
+      for (const c of contacts) {
+        if (c[0] < ax || (c[0] === ax && c[2] < az)) { ax = c[0]; az = c[2]; }
+        if (c[0] > bx || (c[0] === bx && c[2] > bz)) { bx = c[0]; bz = c[2]; }
+      }
+      const dx = bx - ax, dz = bz - az, L2 = dx * dx + dz * dz;
+      const t = L2 > 0 ? Math.max(0, Math.min(1, ((com[0] - ax) * dx + (com[2] - az) * dz) / L2)) : 0;
+      const sx = ax + t * dx, sz = az + t * dz;
+      const ox = com[0] - sx, oz = com[2] - sz;
+      const d = Math.hypot(ox, oz);
+      if (d <= _BAL_TARGET) return;
+
+      // Move everything except the planted feet toward the support point; the
+      // COM follows at slightly less than the step, so a few iterations converge.
+      // Never travel past the cumulative budget.
+      let step = Math.min(d - _BAL_TARGET * 0.5, _BAL_MAX_TOTAL - traveled);
+      const planted = { L: null, R: null };
+      for (const [n, side] of Object.entries(_FOOT_SET)) {
+        if (jp[n] && jp[n][1] <= GROUND_Y + _BAL_TOL) {
+          planted[side] = planted[side] || {};
+          planted[side][n] = jp[n].slice();
+        }
+      }
+      // Shifting the pelvis over a planted, near-straight leg tilts that leg
+      // about its ankle — the hip travels an arc, so the pelvis must DROP a
+      // little as it moves (the natural "settle into the stance hip"). Compute
+      // the drop each planted leg requires; cap the step where even a dropped
+      // hip cannot reach.
+      const mxOf = (st) => (-ox / d) * st, mzOf = (st) => (-oz / d) * st;
+      let drop = 0;
+      for (const side of ["L", "R"]) {
+        if (!planted[side] || !planted[side]["ankle" + side]) continue;
+        const hip = jp["hip" + side], ankle = jp["ankle" + side];
+        const reach = BONE_LEN["thigh" + side] + BONE_LEN["shin" + side] - 1;
+        let horiz = Math.hypot(hip[0] + mxOf(step) - ankle[0], hip[2] + mzOf(step) - ankle[2]);
+        if (horiz >= reach) {                       // cannot reach even flat: shorten the step
+          let lo = 0, hi = step;
+          for (let k = 0; k < 12; k++) {
+            const mid = (lo + hi) / 2;
+            if (Math.hypot(hip[0] + mxOf(mid) - ankle[0], hip[2] + mzOf(mid) - ankle[2]) >= reach) hi = mid;
+            else lo = mid;
+          }
+          step = lo;
+          horiz = Math.hypot(hip[0] + mxOf(step) - ankle[0], hip[2] + mzOf(step) - ankle[2]);
+        }
+        const maxHipY = ankle[1] + Math.sqrt(Math.max(0, reach * reach - horiz * horiz));
+        if (hip[1] > maxHipY) drop = Math.max(drop, hip[1] - maxHipY);
+      }
+      if (step < 0.5) return;
+      traveled += step;
+      const mx = mxOf(step), mz = mzOf(step);
+      const kneeBefore = { L: jp.kneeL && jp.kneeL.slice(), R: jp.kneeR && jp.kneeR.slice() };
+      for (const k in jp) jp[k] = [jp[k][0] + mx, jp[k][1] - drop, jp[k][2] + mz];
+      // Re-plant grounded feet and re-solve those legs (hip moved; ankle fixed).
+      for (const side of ["L", "R"]) {
+        const set = planted[side];
+        if (!set) continue;
+        for (const [n, pos] of Object.entries(set)) jp[n] = pos;
+        const hip = jp["hip" + side], ankle = jp["ankle" + side];
+        if (!hip || !ankle || !set["ankle" + side]) continue;
+        const l1 = BONE_LEN["thigh" + side], l2 = BONE_LEN["shin" + side];
+        // Preserve the authored bend direction: pole = the old knee's offset
+        // from the (old) hip->ankle axis, falling back to "forward".
+        let pole = [0, 0, 1];
+        const kb = kneeBefore[side];
+        if (kb) {
+          const axis = V.norm(V.sub(ankle, hip));
+          const rel = V.sub([kb[0] - mx, kb[1] + drop, kb[2] - mz], hip);
+          const off = V.sub(rel, V.scale(axis, V.dot(rel, axis)));
+          if (V.len(off) > 1e-6) pole = off;
+        }
+        jp["knee" + side] = solveTwoBoneIK(hip, ankle, l1, l2, pole).knee;
+      }
+    }
   }
 
   // Two-bone analytic IK (law of cosines): orient a hip->knee->ankle chain so the
@@ -375,22 +687,33 @@
     return sideDir ? V.norm(sideDir) : (frontDir ? V.norm(frontDir) : null);
   }
 
-  // ---- root (pelvis) travel ------------------------------------------------
-  // The bone-direction adapter discards the body's absolute rise/fall and sway
-  // (a squat lowers, a weight-shift translates). We recover it from the 2-D hip
-  // joint: its displacement from the exercise's reference pose, scaled from art
-  // units into skeleton units, becomes a per-pose pelvis offset from REST.hips.
+  // ---- root (pelvis) placement ----------------------------------------------
+  // The bone-direction adapter discards the body's absolute position (a squat
+  // lowers, a push-up lies low, a seated figure sits at chair height). We
+  // recover it ABSOLUTELY from the 2-D hip joint: the art space carries a real
+  // ground line (art y = 318) and a real vertical axis (art x = 120), so each
+  // pose's hip maps directly into world units. Absolute (not reference-relative)
+  // anchoring is what makes prone poses lie DOWN and seated poses SIT — a
+  // relative scheme pinned every first pose to standing pelvis height.
   const ART_LEG = 134; // canonical standing hip->ankle vertical span in the 240x340 art space
   const ART_TO_WORLD = (REST.hips[1] - REST.ankleL[1]) / ART_LEG; // ~0.67
+  const ART_GROUND_Y = 318;
+  const ART_CENTER_X = 120;
 
-  // Map the 2-D hip to world axes for DISPLACEMENT (origin cancels): front x->X,
-  // side x->Z, art-y->-Y. A missing view contributes 0 on its axis.
-  function _hipVec(sidePose, frontPose) {
+  // World pelvis position from the views' hip joints: front x -> world X,
+  // side x -> world Z, art height above ground -> world Y. A missing view
+  // leaves its lateral axis at rest.
+  function _hipWorld(sidePose, frontPose) {
     const fh = frontPose && frontPose.hip, sh = sidePose && sidePose.hip;
+    if (!fh && !sh) return null;
     const ys = [];
-    if (fh) ys.push(-fh[1]);
-    if (sh) ys.push(-sh[1]);
-    return [fh ? fh[0] : 0, ys.length ? ys.reduce((s, v) => s + v, 0) / ys.length : 0, sh ? sh[0] : 0];
+    if (fh) ys.push(ART_GROUND_Y - fh[1]);
+    if (sh) ys.push(ART_GROUND_Y - sh[1]);
+    return [
+      fh ? (fh[0] - ART_CENTER_X) * ART_TO_WORLD : REST.hips[0],
+      (ys.reduce((s, v) => s + v, 0) / ys.length) * ART_TO_WORLD,
+      sh ? (sh[0] - ART_CENTER_X) * ART_TO_WORLD : REST.hips[2],
+    ];
   }
 
   // Convert one keyframe pose (the views' joint maps for a pose name) to per-bone
@@ -437,20 +760,12 @@
     const poses = {};
     for (const name of poseNames) poses[name] = adaptPose(views, name, { curve });
 
-    // Attach pelvis travel: each pose's hip displacement from the reference pose
-    // (the rest pose if present, else the first), scaled into skeleton units.
-    const names = [...poseNames];
-    const refName = poseNames.has("stand") ? "stand" : names[0];
-    if (refName) {
-      const refVec = _hipVec(views.side && views.side[refName], views.front && views.front[refName]);
-      for (const name of names) {
-        const v = _hipVec(views.side && views.side[name], views.front && views.front[name]);
-        poses[name].__root = [
-          REST.hips[0] + (v[0] - refVec[0]) * ART_TO_WORLD,
-          REST.hips[1] + (v[1] - refVec[1]) * ART_TO_WORLD,
-          REST.hips[2] + (v[2] - refVec[2]) * ART_TO_WORLD,
-        ];
-      }
+    // Attach the pelvis position, anchored ABSOLUTELY from each pose's 2-D hip
+    // (art ground/centre are real datums), so prone poses lie down and seated
+    // poses sit at chair height. Grounding then only fine-aligns the contact.
+    for (const name of poseNames) {
+      const v = _hipWorld(views.side && views.side[name], views.front && views.front[name]);
+      if (v) poses[name].__root = v;
     }
     return poses;
   }
@@ -460,7 +775,7 @@
     const out = {};
     const names = new Set([...Object.keys(a), ...Object.keys(b)]);
     for (const n of names) {
-      if (n === "__root") continue;
+      if (n.startsWith("__")) continue;  // meta channels (__root/__twist) are not quats
       out[n] = clampJoint(n, Q.slerp(a[n] || Q.IDENT, b[n] || Q.IDENT, t));
     }
     if (a.__root || b.__root) {
@@ -479,7 +794,8 @@
 
   return {
     V, Q, REST, BONES, BONE_BY_NAME, REST_DIR, BONE_LEN, GROUND_Y, JOINT_LIMITS,
-    forwardKinematics, adaptPose, adaptExercise, slerpPose, solveTwoBoneIK,
+    CONTACT_CANDIDATES, CONTACT_SNAP, SEGMENTS, centerOfMass,
+    forwardKinematics, balanceAdjust, adaptPose, adaptExercise, slerpPose, solveTwoBoneIK,
     swingAngle, clampJoint, axisAngleQuat,
     EASINGS, easingFor, LIFE_DEFAULTS, LIFE_MAX, breathWave, applyLife,
   };

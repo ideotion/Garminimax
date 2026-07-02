@@ -166,17 +166,23 @@ function allMovements() {
   return home.concat(tc);
 }
 
-test("PR2: the lowest foot is grounded across every phase of every movement", () => {
+test("PR2: the lowest contact is grounded and nothing pierces, every phase", () => {
+  // Grounding aligns the lowest CONTACT CANDIDATE (feet in standing work,
+  // hands/knees prone, shoulders/head lying) to the floor and never leaves any
+  // candidate below it. A kneeling pose's toes may ride high behind the body,
+  // so we no longer require a FOOT specifically — just that something is planted
+  // and nothing is driven underground.
   const TOL = 0.5;
   for (const ex of allMovements()) {
     const poses = P.adaptExercise(ex);
     for (const ph of ex.phases) {
       for (const t of [0, 0.25, 0.5, 0.75, 1]) {
         const pose = P.slerpPose(poses[ph.from] || poses[ph.to], poses[ph.to] || poses[ph.from], t);
-        const jp = P.forwardKinematics(pose, { ground: true });
-        const lowest = Math.min(jp.footL[1], jp.footR[1], jp.toeL[1], jp.toeR[1]);
+        const jp = P.forwardKinematics(pose, { ground: true, balance: true });
+        let lowest = Infinity;
+        for (const n of P.CONTACT_CANDIDATES) if (jp[n]) lowest = Math.min(lowest, jp[n][1]);
         assert.ok(Math.abs(lowest - P.GROUND_Y) <= TOL, `${ex.id} ${ph.name}@${t}: lowest contact ${lowest}`);
-        assert.ok(jp.footL[1] >= P.GROUND_Y - TOL && jp.footR[1] >= P.GROUND_Y - TOL, `${ex.id}: a foot dipped below ground`);
+        assert.ok(lowest >= P.GROUND_Y - TOL, `${ex.id} ${ph.name}@${t}: a contact dipped below ground`);
       }
     }
   }
