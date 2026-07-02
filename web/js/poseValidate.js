@@ -22,44 +22,16 @@
   "use strict";
 
   // ---- Dempster/Winter body-segment parameters ------------------------------
-  // mass: fraction of total body mass. com: fraction of the segment length from
-  // the PROXIMAL joint. Forearm+hand is Winter's combined row (0.022 @ 0.682
-  // from the elbow) because the rig has no wrist yet. Masses sum to 1.000.
-  const SEGMENTS = [
-    { name: "trunk", from: "hips", to: "neckBase", mass: 0.497, com: 0.50 },
-    { name: "headNeck", from: "head", to: "head", mass: 0.081, com: 0 },   // point mass at the head joint
-    { name: "thighL", from: "hipL", to: "kneeL", mass: 0.100, com: 0.433 },
-    { name: "thighR", from: "hipR", to: "kneeR", mass: 0.100, com: 0.433 },
-    { name: "shankL", from: "kneeL", to: "ankleL", mass: 0.0465, com: 0.433 },
-    { name: "shankR", from: "kneeR", to: "ankleR", mass: 0.0465, com: 0.433 },
-    { name: "footL", from: "ankleL", to: "toeL", mass: 0.0145, com: 0.50 },
-    { name: "footR", from: "ankleR", to: "toeR", mass: 0.0145, com: 0.50 },
-    { name: "upperArmL", from: "shoulderL", to: "elbowL", mass: 0.028, com: 0.436 },
-    { name: "upperArmR", from: "shoulderR", to: "elbowR", mass: 0.028, com: 0.436 },
-    { name: "forearmHandL", from: "elbowL", to: "handL", mass: 0.022, com: 0.682 },
-    { name: "forearmHandR", from: "elbowR", to: "handR", mass: 0.022, com: 0.682 },
-  ];
-
-  // Whole-body center of mass from world joint positions (weighted segment sum).
-  function centerOfMass(jp) {
-    let m = 0;
-    const c = [0, 0, 0];
-    for (const s of SEGMENTS) {
-      const a = jp[s.from], b = jp[s.to];
-      if (!a || !b) continue;
-      const p = [a[0] + (b[0] - a[0]) * s.com, a[1] + (b[1] - a[1]) * s.com, a[2] + (b[2] - a[2]) * s.com];
-      c[0] += p[0] * s.mass; c[1] += p[1] * s.mass; c[2] += p[2] * s.mass;
-      m += s.mass;
-    }
-    return m > 0 ? [c[0] / m, c[1] / m, c[2] / m] : [0, 0, 0];
-  }
+  // The mass model lives in the motion core (the skeleton owns its body); these
+  // are delegations kept for API compatibility. Masses sum to 1.000 there.
+  const SEGMENTS = P.SEGMENTS;
+  const centerOfMass = P.centerOfMass;
 
   // ---- ground contacts & base of support ------------------------------------
-  // Candidate contact joints: feet and toes always; hands/knees/hips join the
-  // support set in floor work (push-ups, planks, bridges) when they are at
-  // ground level. `contactTol` is how close (world units) counts as touching.
-  const CONTACT_JOINTS = ["footL", "footR", "toeL", "toeR", "ankleL", "ankleR",
-    "handL", "handR", "kneeL", "kneeR", "hips"];
+  // Candidate contact joints come from the motion core too (feet always;
+  // hands/knees/hips in floor work; shoulders/head lying down), so the checker
+  // and the renderer can never disagree about what may bear on the floor.
+  const CONTACT_JOINTS = P.CONTACT_CANDIDATES;
   const DEFAULTS = {
     contactTol: 3.0,     // a joint within this height of the floor is a contact
     pierceTol: 3.5,      // nothing may sit further below the floor than this
@@ -145,7 +117,9 @@
       }
     }
 
-    const jp = P.forwardKinematics(pose, { ground: true });
+    // Validate what a renderer would actually draw: grounded, with the weight
+    // shift active except when the human is braced on an external support.
+    const jp = P.forwardKinematics(pose, { ground: true, balance: !o.supported });
     for (const j of CONTACT_JOINTS) {
       const p = jp[j];
       if (p && p[1] < P.GROUND_Y - o.pierceTol) {
@@ -187,7 +161,14 @@
         const a = poses[ph.from] || poses[ph.to], b = poses[ph.to] || poses[ph.from];
         if (!a || !b) continue;
         const res = validatePose(P.slerpPose(a, b, t), Object.assign({}, opts, { supported }));
-        for (const i of res.issues) issues.push(Object.assign({ phase: ph.name, t }, i));
+        for (const i of res.issues) {
+          // Static balance is a property of the KEY poses; the frames between
+          // them may legitimately pass through dynamic imbalance (lowering into
+          // a plank IS a controlled fall onto the hands). Limits, quaternions
+          // and floor-piercing stay enforced at every sampled instant.
+          if (i.kind === "balance" && t !== 0 && t !== 1) continue;
+          issues.push(Object.assign({ phase: ph.name, t }, i));
+        }
       }
     }
     return { ok: issues.length === 0, issues, supported };

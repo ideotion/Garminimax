@@ -42,6 +42,7 @@ const FormModel3D = (() => {
   ];
   const TORSO_Q = ["shoulderL", "shoulderR", "hipR", "hipL"];
   const JOINTS = Object.keys(GIRTH);
+  const PROJECT_JOINTS = JOINTS.concat(["head"]);  // GIRTH has no head; project it too
   // Light direction in screen space (upper-left-front; y is down).
   const LIGHT = (() => { const v = [-0.45, -0.8]; const l = Math.hypot(v[0], v[1]); return [v[0] / l, v[1] / l]; })();
 
@@ -106,6 +107,13 @@ const FormModel3D = (() => {
     const baseYaw = onlySide ? 90 : onlyFront ? 0 : 24;
     const cam = makeCamera(baseYaw);
 
+    // Weight shift onto the base of support (bounded) — off when the figure is
+    // braced on an external support (chair/wall/counter/step), where the weight
+    // is legitimately shared with the object rather than the feet.
+    const SUPPORT_OBJECTS = ["chair", "wall", "counter", "step"];
+    const braced = ex.object && Object.values(ex.object).some((v) => SUPPORT_OBJECTS.includes(v));
+    const fkOpts = { ground: true, balance: !braced };
+
     host.innerHTML = "";
     const el = (tag, cls, html) => { const n = document.createElement(tag); if (cls) n.className = cls; if (html != null) n.innerHTML = html; return n; };
 
@@ -143,6 +151,7 @@ const FormModel3D = (() => {
       canvas.style.width = w + "px"; canvas.style.height = h + "px";
       canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      refreshTheme();
       if (!playing) drawPose(currentPose());
     }
 
@@ -154,16 +163,25 @@ const FormModel3D = (() => {
       return P.slerpPose(poses[ph.from] || poses[restName], poses[ph.to] || poses[restName], 0);
     }
 
+    // Theme colours are read from CSS custom properties via getComputedStyle,
+    // which forces a style flush — far too costly to do inside the per-frame
+    // draw. Cache them; refresh on resize/reset (and thus on a theme toggle,
+    // which re-lays-out the view anyway).
+    let text = [232, 232, 234], surface = [26, 26, 32];
+    function refreshTheme() {
+      text = rgbVar("--text", [232, 232, 234]);
+      surface = rgbVar("--surface", [26, 26, 32]);
+    }
+
     function drawPose(pose) {
       const w = canvas.width / (window.devicePixelRatio || 1), h = canvas.height / (window.devicePixelRatio || 1);
       const cx = w / 2, cyc = h * 0.55;
       ctx.clearRect(0, 0, w, h);
-      const jp = P.forwardKinematics(pose, { ground: true });
-      const text = rgbVar("--text", [232, 232, 234]), surface = rgbVar("--surface", [26, 26, 32]);
+      const jp = P.forwardKinematics(pose, fkOpts);
 
       // Project every joint to absolute screen space once.
       const pj = {};
-      JOINTS.concat(["head"]).forEach((nm) => {
+      PROJECT_JOINTS.forEach((nm) => {
         const p = cam.project(jp[nm]);
         pj[nm] = { x: cx + p.x, y: cyc + p.y, depth: p.depth, scale: p.scale };
       });
@@ -273,6 +291,7 @@ const FormModel3D = (() => {
       phaseIdx = 0; phaseStart = 0; reps = 0; _pose = null;
       playBtn.textContent = "Start"; phaseEl.textContent = "Ready"; cue.innerHTML = "";
       prog.style.width = "0%"; countEl.textContent = ex.targetReps ? "0 / " + ex.targetReps : "";
+      refreshTheme();
       drawPose(currentPose());
     }
 
