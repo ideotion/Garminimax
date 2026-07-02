@@ -11,6 +11,27 @@ GitHub Releases page for the auto-generated notes per tag.
 ## [Unreleased]
 
 ### Added
+- **3-D realism mission (motion core overhaul).** The movement figure's motion
+  is now biomechanically grounded and test-verified end to end: the pelvis
+  travels with the authored motion and the feet stay planted (root travel +
+  grounding with a unit-tested two-bone IK), joint rotations clamp to
+  AAOS-cited human ranges, an optional per-bone axial twist enables pronation/
+  rotation, per-phase easing plus a bounded, literature-anchored breath and
+  postural-sway overlay make holds read alive, and the trunk is a segmented
+  lumbar/thoracic/cervical chain with clavicles and toes (rigid by default —
+  proven equivalent to the old skeleton to 0.000000000 units — with opt-in,
+  chest-orientation-preserving curvature). "Realistic" is enforceable: a
+  biomechanical-plausibility validator (Dempster/Winter center-of-mass over the
+  base of support; it surfaced three real content defects, tracked as a
+  shrink-only waiver ratchet) and a visual-regression harness (312 deterministic
+  draw-command signatures + an SVG gallery with human-approved baselines) run in
+  CI. Recorded activity can drive the figure (cadence→tempo/gait, HR→breathing/
+  effort, hard-capped fatigue droop) behind an off-by-default hookup, a vendored-
+  asset license & size manifest gate protects every future binary, and a
+  self-mocap authoring scaffold (MoveNet COCO-17 mapping, synthetic-fixture
+  tested; weights never committed) lets contributors draft new movements from
+  webcam video. Remaining from the mission: the WebGL avatar scaffold, which
+  needs vendored three.js (connected session).
 - **3-D movement figure (beta).** A new engine-agnostic 3-D motion core
   (`web/js/pose3d.js`): a humanoid skeleton, quaternion bone-rotation math,
   forward kinematics, pose interpolation, and a 2-D→3-D IK adapter that derives
