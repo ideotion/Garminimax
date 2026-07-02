@@ -227,7 +227,7 @@
     swayAP: 0.7,         // front-back amplitude, world units (~6 mm)
     swayML: 0.4,         // side-side amplitude, world units (~3.5 mm)
   };
-  const LIFE_MAX = { breathAmpDeg: 3.0, sway: 2.0 };
+  const LIFE_MAX = { breathAmpDeg: 3.0, sway: 2.0, droopDeg: 4.0 };
   const _clamp01 = (v) => Math.max(0, Math.min(1, Number(v) || 0));
 
   // Breath waveform in [-1, 1]: rises over the inhale fraction, falls over the
@@ -240,17 +240,20 @@
   }
 
   // Overlay life onto a pose (pure: returns a new pose, input untouched).
-  // opts: { breath: 0..1, sway: 0..1, breathAmpDeg?, swayAP?, swayML? }.
+  // opts: { breath: 0..1, sway: 0..1, breathAmpDeg?, breathRate?, swayAP?,
+  // swayML?, droopDeg? }. droopDeg adds a constant, hard-bounded extra trunk
+  // pitch — the subtle fatigue posture from live effort data (PR9).
   function applyLife(pose, tMs, opts = {}) {
     const breath = _clamp01(opts.breath);
     const sway = _clamp01(opts.sway);
-    if (!breath && !sway) return pose;
+    const droop = Math.min(Math.max(Number(opts.droopDeg) || 0, 0), LIFE_MAX.droopDeg);
+    if (!breath && !sway && !droop) return pose;
     const out = Object.assign({}, pose);
-    if (breath) {
+    if (breath || droop) {
       const amp = Math.min(opts.breathAmpDeg != null ? opts.breathAmpDeg : LIFE_DEFAULTS.breathAmpDeg,
         LIFE_MAX.breathAmpDeg) * breath * _RAD;
-      const w = breathWave(tMs, opts.breathRate, opts.inhaleFrac);
-      out.thoracic = Q.mul(pose.thoracic || Q.IDENT, axisAngleQuat([1, 0, 0], amp * w));
+      const w = breath ? breathWave(tMs, opts.breathRate, opts.inhaleFrac) : 0;
+      out.thoracic = Q.mul(pose.thoracic || Q.IDENT, axisAngleQuat([1, 0, 0], amp * w + droop * _RAD));
     }
     if (sway) {
       const t = tMs / 1000;

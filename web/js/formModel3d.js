@@ -85,6 +85,12 @@ const FormModel3D = (() => {
   function create(host, ex, opts = {}) {
     if (!P) { host.innerHTML = "<div class='empty'>3-D engine unavailable.</div>"; return { destroy() {}, start() {}, reset() {} }; }
     const onFinish = opts.onFinish || null;
+    // Optional live-data hookup (mission PR9): pass opts.live = {cadence_spm,
+    // hr, hrMax} to let recorded activity drive breath rate, rep tempo, and a
+    // subtle fatigue droop. OFF by default — nothing changes unless a caller
+    // opts in, and nothing in the app passes it yet.
+    const live = (opts.live && typeof MotionParams !== "undefined")
+      ? MotionParams.motionParamsFor(opts.live) : null;
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const poses = ex.poses3d || P.adaptExercise(ex);
     const phases = ex.phases || [];
@@ -218,7 +224,7 @@ const FormModel3D = (() => {
       if (!playing || destroyed) return;
       if (!canvas.isConnected) { playing = false; return; }
       const ph = phases[phaseIdx];
-      const dur = ph.dur * (ph.isHold ? 1 : tempoScale);
+      const dur = ph.dur * (ph.isHold ? 1 : tempoScale * (live ? live.tempoScale : 1));
       if (!phaseStart) phaseStart = ts;
       const elapsed = ts - phaseStart;
       let t = elapsed / dur; if (t > 1) t = 1;
@@ -227,7 +233,11 @@ const FormModel3D = (() => {
       const easeFn = P.easingFor(ph.ease);
       _pose = P.applyLife(
         P.slerpPose(poses[ph.from] || poses[restName], poses[ph.to] || poses[restName], easeFn(t)),
-        ts, { breath: ph.isHold ? 1 : 0.3, sway: 1 },
+        ts, {
+          breath: ph.isHold ? 1 : 0.3, sway: 1,
+          breathRate: live ? live.breathRate : undefined,
+          droopDeg: live ? live.droopDeg : 0,
+        },
       );
       drawPose(_pose);
       prog.style.width = (t * 100).toFixed(1) + "%";
