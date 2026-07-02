@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fenix5Sync — offline analyzer</title>
+<!-- Everything runs in this tab. Your fitness data is read from files you pick and
+     never leaves the browser; the only network calls fetch the two code libraries
+     below (Chart.js, fit-file-parser) — vendor them locally for a fully air-gapped build. -->
+<style>
+  :root { --bg:#0f1216; --surface:#171c22; --surface2:#1e252d; --border:#2a333d;
+    --text:#e6edf3; --dim:#9fb0c0; --faint:#6b7d8f; --accent:#4b9fff; --good:#3fb950;
+    --warn:#d6a432; --bad:#f0564b; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:15px/1.5 system-ui,sans-serif; background:var(--bg); color:var(--text); }
+  header { padding:18px 22px; border-bottom:1px solid var(--border); }
+  h1 { margin:0; font-size:18px; } .sub { color:var(--dim); font-size:13px; margin-top:2px; }
+  main { max-width:960px; margin:0 auto; padding:22px; display:grid; gap:18px; }
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px; }
+  .row { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+  label.f { display:flex; flex-direction:column; gap:3px; font-size:12px; color:var(--dim); }
+  input, button { font:inherit; }
+  input[type=number] { width:88px; background:var(--surface2); border:1px solid var(--border);
+    color:var(--text); border-radius:6px; padding:6px 8px; }
+  button { background:var(--accent); color:#04121f; border:0; border-radius:8px; padding:9px 16px; font-weight:600; cursor:pointer; }
+  button.ghost { background:var(--surface2); color:var(--text); border:1px solid var(--border); }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:10px; }
+  .stat { background:var(--surface2); border-radius:8px; padding:10px 12px; }
+  .stat .k { font-size:11px; color:var(--faint); text-transform:uppercase; letter-spacing:.04em; }
+  .stat .v { font-size:22px; font-weight:700; margin-top:2px; }
+  .badge { font-size:11px; font-weight:700; color:#04121f; border-radius:5px; padding:2px 8px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th,td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--border); }
+  th { color:var(--faint); font-weight:600; }
+  .muted { color:var(--faint); font-size:12px; }
+  canvas { max-width:100%; }
+  #drop { border:1.5px dashed var(--border); border-radius:10px; padding:22px; text-align:center; color:var(--dim); }
+  #drop.over { border-color:var(--accent); color:var(--text); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Fenix5Sync — offline analyzer</h1>
+  <div class="sub">Your Garmin data is analyzed entirely in this browser and never uploaded.</div>
+</header>
+<main>
+  <div class="card">
+    <div class="row" style="justify-content:space-between">
+      <strong>1 · Your thresholds</strong>
+      <span class="muted">Sharpen the load estimate (optional). Saved on this device only.</span>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <label class="f">Max HR<input id="maxhr" type="number" placeholder="190"></label>
+      <label class="f">Resting HR<input id="resthr" type="number" placeholder="50"></label>
+      <label class="f">FTP (W)<input id="ftp" type="number" placeholder="250"></label>
+    </div>
+  </div>
+
+  <div class="card">
+    <strong>2 · Load your activities</strong>
+    <div class="muted" style="margin:6px 0 12px">Plug your watch in (USB mass-storage mode) and pick its <code>GARMIN/Activity</code> folder, or drop <code>.fit</code> files here.</div>
+    <div class="row">
+      <button id="pickDir">Pick activity folder…</button>
+      <button id="pickFiles" class="ghost">Pick files…</button>
+      <input id="fileInput" type="file" accept=".fit" multiple hidden>
+    </div>
+    <div id="drop" style="margin-top:12px">…or drop <code>.fit</code> files here</div>
+    <div id="ingestStatus" class="muted" style="margin-top:10px"></div>
+  </div>
+
+  <div class="card" id="stateCard" hidden>
+    <strong>Where you stand today</strong>
+    <div class="grid" id="stateGrid" style="margin-top:10px"></div>
+    <div class="row" id="stateBadges" style="margin-top:10px"></div>
+    <ul class="muted" id="stateNotes" style="margin:8px 0 0; padding-left:18px"></ul>
+  </div>
+
+  <div class="card" id="pmcCard" hidden>
+    <strong>Fitness / Fatigue / Form (last 120 days)</strong>
+    <canvas id="pmc" height="260" style="margin-top:10px"></canvas>
+  </div>
+
+  <div class="card" id="listCard" hidden>
+    <strong>Activities <span class="muted" id="listCount"></span></strong>
+    <div style="overflow:auto; max-height:340px; margin-top:8px">
+      <table id="listTable"><thead><tr><th>Date</th><th>Sport</th><th>Duration</th><th>Avg HR</th><th>Avg W</th><th>Load</th></tr></thead><tbody></tbody></table>
+    </div>
+  </div>
+</main>
+
+<!-- Chart.js (canvas charts) + fit-file-parser (MIT). Loaded from a CORS CDN;
+     these are CODE fetches, not user-data. Vendor them into ./vendor/ for offline. -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script type="module" src="./main.mjs"></script>
+</body>
+</html>
