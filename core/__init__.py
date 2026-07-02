@@ -50,6 +50,7 @@ from .export import (
     write_archive,
     write_bulk_export,
 )
+from .fitness_trend import FitnessPoint, compute_fitness_trend
 from .hr_trends import HRPoint, compute_hr_trends
 from .importers import detect_format, parse_activity_file
 from .logging_setup import get_logger, read_recent_logs, setup_logging
@@ -167,6 +168,9 @@ __all__ = [
     # hr trends
     "compute_hr_trends",
     "HRPoint",
+    # fitness trend
+    "compute_fitness_trend",
+    "FitnessPoint",
     # race predictions
     "compute_race_predictions",
     "RacePrediction",

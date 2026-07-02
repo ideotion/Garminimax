@@ -12,7 +12,7 @@ from fastapi.testclient import TestClient
 from core import compute_race_predictions
 from core.config import write_config
 from core.models import Activity, Trackpoint
-from core.race import _vdot
+from core.race import vdot_for_effort
 from server.app import create_app
 
 _BASE = _dt.datetime(2023, 6, 15, 8, 0, 0)
@@ -37,7 +37,7 @@ def _pred(result: dict, label: str) -> dict:
 # --------------------------------------------------------------------------- #
 def test_vdot_known_value():
     # A 5 K in 20:00 is ~VDOT 49.8 in Daniels' tables.
-    assert _vdot(5000, 1200) == pytest.approx(49.8, abs=0.2)
+    assert vdot_for_effort(5000, 1200) == pytest.approx(49.8, abs=0.2)
 
 
 def test_predictions_from_5k_run():
