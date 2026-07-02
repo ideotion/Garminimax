@@ -93,8 +93,27 @@ const U = (() => {
     ]);
   }
 
+  // "Log to archive" button for a completed guided session: creates a manual
+  // activity so training load / insights / recap see the work. One-shot.
+  function logSessionButton(sport, session, label) {
+    const mins = Math.max(1, Math.round(session.minutes || (session.seconds || 60) / 60));
+    const b = el("button", { class: "btn primary", style: "margin:var(--sp-3) 0",
+      text: `Log to archive (${mins} min)` });
+    b.onclick = async () => {
+      b.disabled = true;
+      try {
+        await API.logManualActivity({ sport, duration_min: mins, label });
+        b.textContent = "Logged ✓ — now counts toward your training load";
+      } catch (e) {
+        b.disabled = false;
+        toast("Could not log the session: " + e.message, "bad");
+      }
+    };
+    return b;
+  }
+
   return {
     el, setView, view, fmtDuration, fmtKm, fmtSpeedKmh, fmtPace,
-    fmtDate, fmtDateTime, cap, toast, cssVar, download, spinner,
+    fmtDate, fmtDateTime, cap, toast, cssVar, download, spinner, logSessionButton,
   };
 })();

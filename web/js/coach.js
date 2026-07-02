@@ -399,7 +399,13 @@ const CoachView = (() => {
             ]))));
           out.appendChild(U.el("button", {
             class: "btn primary", style: "margin-top:var(--sp-2)", text: "Start session",
-            onclick: () => { const host = U.el("div"); U.setView(host); SessionPlayer.create(host, session, { title: "Cross-training", onExit: render }); },
+            onclick: () => {
+              const host = U.el("div"); U.setView(host);
+              SessionPlayer.create(host, session, {
+                title: "Cross-training", onExit: render,
+                onComplete: (doneEl, s) => doneEl.append(U.logSessionButton("strength_training", s, "Coach cross-training")),
+              });
+            },
           }));
         } catch (e) { U.toast("Could not build a session: " + e.message, "bad"); }
         btn.disabled = false;

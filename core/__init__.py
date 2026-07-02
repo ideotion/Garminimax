@@ -53,6 +53,7 @@ from .export import (
 from .hr_trends import HRPoint, compute_hr_trends
 from .importers import detect_format, parse_activity_file
 from .logging_setup import get_logger, read_recent_logs, setup_logging
+from .manual import create_manual_activity, is_manual
 from .metrics import ActivityMetrics, compute_activity_metrics
 from .models import Activity, Lap, RunSummary, Trackpoint
 from .parse import ParseError, parse_fit_file
@@ -196,6 +197,9 @@ __all__ = [
     "compute_segment_efforts",
     # athlete suggestions
     "suggest_athlete",
+    # manual logging
+    "create_manual_activity",
+    "is_manual",
     # logging
     "setup_logging",
     "get_logger",

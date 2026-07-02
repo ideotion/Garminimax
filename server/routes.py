@@ -11,6 +11,7 @@ from __future__ import annotations
 import asyncio
 import json
 import tempfile
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Iterator
 
@@ -51,6 +52,7 @@ from core.training_load import compute_training_load
 from core.zones import compute_zones
 from .progress import JobManager
 from core.coach_state import compute_coach_state
+from core.manual import create_manual_activity, is_manual
 from core.plan_builder import Objective, agenda_to_ics, build_plan
 from core.wellness import DayWellness
 from .schemas import (
@@ -61,6 +63,7 @@ from .schemas import (
     ExportImportRequest,
     Health,
     LogsResponse,
+    ManualActivityRequest,
     SalvageRequest,
     SegmentCreate,
     Stats,
@@ -325,6 +328,50 @@ def get_activity(activity_id: int, store: Store = Depends(get_store)) -> Activit
     if activity is None:
         raise HTTPException(status_code=404, detail="activity not found")
     return activity_to_dict(activity, include_series=True)  # type: ignore[return-value]
+
+
+@router.post("/activities/manual", response_model=ActivityDetail)
+def log_manual_activity(
+    body: ManualActivityRequest,
+    store: Store = Depends(get_store),
+) -> ActivityDetail:
+    """Hand-log an activity no watch recorded (strength session, Tai Chi flow, …).
+
+    Stored as a first-class activity (synthetic ``manual-…`` hash, ``extra.source
+    == "manual"``), so training load, monotony, insights and the recap all see it.
+    """
+    start = None
+    if body.start_time:
+        try:
+            start = datetime.fromisoformat(body.start_time)
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=f"bad start_time: {exc}") from exc
+    try:
+        activity = create_manual_activity(
+            sport=body.sport, duration_min=body.duration_min, start_time=start,
+            avg_heart_rate=body.avg_heart_rate, total_calories=body.total_calories,
+            label=body.label,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    store.add_activity(activity)
+    return activity_to_dict(activity, include_series=True)  # type: ignore[return-value]
+
+
+@router.delete("/activities/{activity_id}", status_code=204)
+def delete_manual_activity(activity_id: int, store: Store = Depends(get_store)) -> Response:
+    """Delete a hand-logged entry (typos happen). Imported watch data is immutable:
+    deleting a non-manual activity is refused with 409."""
+    activity = store.get_activity(activity_id, with_series=False)
+    if activity is None:
+        raise HTTPException(status_code=404, detail="activity not found")
+    if not is_manual(activity):
+        raise HTTPException(
+            status_code=409,
+            detail="only manually logged activities can be deleted; imported files are immutable",
+        )
+    store.delete_activity(activity_id)
+    return Response(status_code=204)
 
 
 @router.get("/activities/{activity_id}/zones")

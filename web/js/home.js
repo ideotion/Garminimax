@@ -264,7 +264,10 @@ const HomeView = (() => {
   function startSession(session) {
     const host = U.el("div");
     U.setView(host);
-    SessionPlayer.create(host, session, { title: "Sports at Home session", onExit: render });
+    SessionPlayer.create(host, session, {
+      title: "Sports at Home session", onExit: render,
+      onComplete: (doneEl, s) => doneEl.append(U.logSessionButton("strength_training", s, "Sports at Home session")),
+    });
   }
 
   function builderCard() {

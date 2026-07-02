@@ -56,6 +56,8 @@ const API = (() => {
     putConfig: (cfg) => req("/config", { method: "PUT", body: JSON.stringify(cfg) }),
     athleteSuggestions: () => req("/athlete/suggestions"),
     fsList: (params) => req("/fs/list" + qs(params)),
+    logManualActivity: (body) => req("/activities/manual", { method: "POST", body: JSON.stringify(body) }),
+    deleteActivity: (id) => req("/activities/" + id, { method: "DELETE" }),
     coachState: () => req("/coach/state"),
     coachPlan: (body) => req("/coach/plan", { method: "POST", body: JSON.stringify(body) }),
 
