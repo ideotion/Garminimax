@@ -1,0 +1,19 @@
+{
+  "_meta": {
+    "schema": 1,
+    "note": "Every third-party file vendored into the app must be listed here with an allowlisted (GPL-3.0-compatible, redistributable) license, its source, a pinned SHA-256, and a size budget. Enforced by scripts/check_vendor_manifest.py via tests/test_vendor_manifest.py — a file in a scan root that is not listed fails the gate. Update the hash deliberately when upgrading an asset.",
+    "allowlist": ["MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "CC0-1.0", "Unlicense", "CC-BY-4.0"],
+    "scan_roots": ["web/vendor", "web/models"]
+  },
+  "assets": [
+    {
+      "path": "web/vendor/chart.umd.js",
+      "name": "Chart.js",
+      "version": "4.4.1",
+      "license": "MIT",
+      "source": "https://github.com/chartjs/Chart.js",
+      "sha256": "74401d738dd3e03ee5dfb3b6841210fe2c4ead8a960c4011ca4ba0b78a9fd8f3",
+      "max_bytes": 400000
+    }
+  ]
+}

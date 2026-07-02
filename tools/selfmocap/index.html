@@ -1,0 +1,56 @@
+<!doctype html>
+<!-- Self-mocap capture page — SCAFFOLD (mission PR10).
+     Inert until a human completes the two vendoring seams below (see README.md).
+     This page is an authoring tool: it is never served by the app and nothing
+     under web/ references it. Model weights are never committed. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Fenix5Sync — self-mocap authoring (scaffold)</title>
+<style>
+  body { background:#101014; color:#e8e8ea; font:14px system-ui; margin:24px; max-width:720px }
+  video, canvas { background:#000; border-radius:8px; max-width:100% }
+  button { font:inherit; padding:8px 14px; border-radius:8px; border:1px solid #333; background:#1a1a20; color:#e8e8ea; cursor:pointer }
+  .todo { border:1px dashed #b58900; padding:10px 12px; border-radius:8px; color:#e8c46a; margin:12px 0 }
+</style>
+<!-- SEAM 1 (human): vendor the Apache-2.0 TF.js runtime + pose-detection here.
+<script src="./vendor/tf.min.js"></script>
+<script src="./vendor/pose-detection.min.js"></script> -->
+<script src="./landmarkMap.js"></script>
+</head>
+<body>
+<h1>Self-mocap authoring (scaffold)</h1>
+<p class="todo"><strong>Not runnable yet.</strong> A human must vendor the
+MoveNet model + TF.js libraries first — see <code>README.md</code> in this
+directory. The mapping/cleanup pipeline below is already implemented and
+unit-tested; this page only lacks the model.</p>
+<video id="cam" width="480" height="360" autoplay muted playsinline></video>
+<div>
+  <button id="rec" disabled>Record (needs model)</button>
+  <button id="stop" disabled>Stop &amp; export draft JSON</button>
+</div>
+<pre id="out"></pre>
+<script>
+"use strict";
+// SEAM 2 (human): after vendoring, create the detector and wire the loop:
+//   const detector = await poseDetection.createDetector(
+//     poseDetection.SupportedModels.MoveNet,
+//     { modelType: poseDetection.movenet.modelType.SINGLEPOSE_THUNDER,
+//       modelUrl: "./model/model.json" });   // LOCAL path — offline by design
+// Calibrate ONCE on a standing frame (so vertical travel is preserved):
+//   const transform = LandmarkMap.computeTransform(firstKeypoints, { mirrored: true });
+// Then per animation frame while recording:
+//   const [p] = await detector.estimatePoses(video);
+//   const pose = LandmarkMap.landmarksToPose2D(p.keypoints.map(k => [k.x, k.y, k.score]),
+//                                              { transform });
+//   if (pose) frames.push({ tMs: performance.now() - t0, pose });
+// And on stop:
+//   const draft = LandmarkMap.framesToKeyframes(frames, { keyframes: 4 });
+//   download JSON -> hand-edit -> validate with the content integrity tests.
+const frames = [];
+document.getElementById("out").textContent =
+  "LandmarkMap loaded: " + (typeof LandmarkMap !== "undefined") +
+  "\nModel: not vendored (see README.md)";
+</script>
+</body>
+</html>
