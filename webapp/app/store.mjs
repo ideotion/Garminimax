@@ -4,7 +4,7 @@
 //
 // (First cut: IndexedDB. The dedicated repo swaps in sqlite-wasm + OPFS
 // opfs-sahpool per the feasibility report, keeping this same getAll/putMany API.)
-const DB_NAME = "fenix5sync";
+const DB_NAME = "garminimax";
 const STORE = "activities";
 
 function open() {

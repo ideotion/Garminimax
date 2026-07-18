@@ -280,7 +280,7 @@ def _safe_extract_zip(zf: zipfile.ZipFile, dest: Path) -> None:
 def _extract_zip_source(zip_path: Path, cfg: Config) -> Source | None:
     """Extract a ``.zip`` of activity files to a temp dir and return a Source."""
     try:
-        tmpdir = Path(tempfile.mkdtemp(prefix="fenix5sync-zip-"))
+        tmpdir = Path(tempfile.mkdtemp(prefix="garminimax-zip-"))
     except OSError as exc:
         logger.warning("could not create temp dir for zip extraction: %s", exc)
         return None
@@ -324,7 +324,7 @@ def _source_from_export(cfg: Config) -> Source | None:
         logger.warning("export source.path does not exist: %s", src)
         return None
     try:
-        tmpdir = Path(tempfile.mkdtemp(prefix="fenix5sync-export-"))
+        tmpdir = Path(tempfile.mkdtemp(prefix="garminimax-export-"))
     except OSError as exc:
         logger.warning("could not create temp dir for export expansion: %s", exc)
         return None

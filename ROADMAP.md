@@ -1,4 +1,4 @@
-# Fenix5Sync — Roadmap Prioritization Brief
+# Garminimax — Roadmap Prioritization Brief
 
 > **Product research brief · v1 · June 2026.** Where a local-first, fully offline
 > Garmin extractor should invest next, read against what is pushing engaged
@@ -16,9 +16,9 @@
 
 ## A. Executive summary
 
-Fenix5Sync is entering its market at an unusually favourable moment. Within the
+Garminimax is entering its market at an unusually favourable moment. Within the
 last 18 months the two dominant platforms have each, in effect, advertised the
-exact value proposition Fenix5Sync embodies.
+exact value proposition Garminimax embodies.
 
 Garmin's March 2025 launch of the paid *Connect+* tier drew a backlash large
 enough that a single boycott thread reached roughly ten thousand upvotes — driven
@@ -35,7 +35,7 @@ GoldenCheetah is local but cycling-power-centric with a steep interface;
 Intervals.icu and Runalyze have the analytics depth but are cloud-hosted and
 depend on the very sync pipes Strava just throttled; the self-hosted servers
 (Endurain, FitTrackee, wger) own the data but offer shallow endurance analysis and
-no direct-from-watch ingestion. Fenix5Sync's opening is the intersection none of
+no direct-from-watch ingestion. Garminimax's opening is the intersection none of
 them occupy: **trustworthy local-first ingestion straight off the device, with
 honest analytics and offline maps in a modern GUI.**
 
@@ -71,9 +71,9 @@ Strong = ●, partial = ◐, weak/absent = ○.
 | wger | ● | ○ | ○ | ○ | ◐ | ● |
 | Endurain / FitTrackee | ● | ◐ | ◐ | ◐ | ○ | ◐ |
 | GarminDB | ● | ◐ | ◐ | ○ | ◐ | ○ |
-| **Fenix5Sync ↗ target** | **●** | **◐→●** | **●** | **◐→●** | **◐** | **◐** |
+| **Garminimax ↗ target** | **●** | **◐→●** | **●** | **◐→●** | **◐** | **◐** |
 
-The white space is the combination Fenix5Sync can own: genuinely local +
+The white space is the combination Garminimax can own: genuinely local +
 direct-device, plus honest analytics and offline maps.
 
 ---
@@ -138,7 +138,7 @@ PR-tracking demand are inferred from competitor parity (thin evidence).
 
 **Format & legality.** GPX and TCX are open XML schemas, and Garmin's FIT SDK is
 free for decoding. The legal sensitivity sits with scraping Connect's web service,
-which Fenix5Sync sidesteps by reading local files and treating the device as
+which Garminimax sidesteps by reading local files and treating the device as
 strictly read-only. These are software tools processing sensor-derived numbers,
 not diagnostic outputs — no medical-device obligations attach. The main interop
 risk is FIT format churn (profile changes effective late 2023): robust, SDK-grade

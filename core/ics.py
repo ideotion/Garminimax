@@ -17,7 +17,7 @@ import re
 from dataclasses import dataclass
 from datetime import date, datetime, timezone
 
-PRODID = "-//Fenix5Sync//Coach Plan//EN"
+PRODID = "-//Garminimax//Coach Plan//EN"
 _MAX_OCTETS = 73  # fold below the 75-octet limit, leaving room for CRLF+space
 
 

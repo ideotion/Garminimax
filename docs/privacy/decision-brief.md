@@ -12,7 +12,7 @@ location and patrol routes of military bases. Strava's own 2024 justification fo
 tightening its API conceded that users are often "unaware their data is surfaced
 in a public feed or heatmap."
 
-Fenix5Sync already ships strong anonymization primitives (privacy-radius nulling,
+Garminimax already ships strong anonymization primitives (privacy-radius nulling,
 GPS fuzz/drop, device/personal stripping, date shifting) but offered no *evidence*
 of why or how much to apply. This audit makes that actionable, and does so in a
 way only a no-cloud tool credibly can: it is the **inverse** of a public heatmap —

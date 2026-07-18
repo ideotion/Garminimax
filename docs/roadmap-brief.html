@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fenix5Sync — Roadmap Prioritization Brief</title>
+<title>Garminimax — Roadmap Prioritization Brief</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -165,7 +165,7 @@
   <!-- ===================== MASTHEAD ===================== -->
   <header class="masthead">
     <div class="eyebrow">Product Research Brief &nbsp;·&nbsp; v1 &nbsp;·&nbsp; June 2026</div>
-    <h1>Fenix5Sync <span class="mono">// roadmap prioritization</span></h1>
+    <h1>Garminimax <span class="mono">// roadmap prioritization</span></h1>
     <p class="dek">Where a local-first, fully offline Garmin extractor should invest next — read against what is actually pushing engaged athletes off the incumbent platforms right now.</p>
     <svg class="trace" viewBox="0 0 820 54" preserveAspectRatio="none" aria-hidden="true">
       <polyline points="0,40 60,33 110,37 165,20 220,26 280,10 340,17 400,8 470,22 540,14 600,28 660,18 720,30 780,22 820,26"
@@ -190,9 +190,9 @@
   <!-- ===================== A. EXEC SUMMARY ===================== -->
   <section id="exec">
     <div class="sec-head"><span class="sec-tag">A</span><h2>Executive summary</h2></div>
-    <p class="lead">Fenix5Sync is entering its market at an unusually favourable moment. Within the last 18 months the two dominant platforms have each, in effect, advertised the exact value proposition Fenix5Sync embodies.</p>
+    <p class="lead">Garminimax is entering its market at an unusually favourable moment. Within the last 18 months the two dominant platforms have each, in effect, advertised the exact value proposition Garminimax embodies.</p>
     <p>Garmin's March 2025 launch of the paid <i>Connect+</i> tier drew a backlash large enough that a single boycott thread reached roughly ten thousand upvotes — driven less by the $7/month price than by the fear that a historically subscription-free platform had started down the road of paywalling future features.<sup class="c"><a href="#s1">1</a><a href="#s2">2</a><a href="#s3">3</a></sup> In November 2024, Strava's API clampdown broke the third-party "data hub" model in parallel: connected apps may no longer show a user's data to anyone but that user, which cut coaches off from athletes' synced activities and explicitly barred AI/analytics use of exported data.<sup class="c"><a href="#s4">4</a><a href="#s5">5</a><a href="#s6">6</a></sup></p>
-    <p>The net effect is a primed audience that wants to own its history and keep real analytics, without a cloud account — and no existing tool fully serves it. GoldenCheetah is local but cycling-power-centric with a famously steep interface; Intervals.icu and Runalyze have the analytics depth but are cloud-hosted and depend on the very sync pipes Strava just throttled; the self-hosted servers (Endurain, FitTrackee, wger) own the data but offer shallow endurance analysis and no direct-from-watch ingestion. Fenix5Sync's opening is the intersection none of them occupy: <b>trustworthy local-first ingestion straight off the device, with honest analytics and offline maps in a modern GUI.</b></p>
+    <p>The net effect is a primed audience that wants to own its history and keep real analytics, without a cloud account — and no existing tool fully serves it. GoldenCheetah is local but cycling-power-centric with a famously steep interface; Intervals.icu and Runalyze have the analytics depth but are cloud-hosted and depend on the very sync pipes Strava just throttled; the self-hosted servers (Endurain, FitTrackee, wger) own the data but offer shallow endurance analysis and no direct-from-watch ingestion. Garminimax's opening is the intersection none of them occupy: <b>trustworthy local-first ingestion straight off the device, with honest analytics and offline maps in a modern GUI.</b></p>
   </section>
 
   <!-- ===================== B. SEGMENTS ===================== -->
@@ -205,14 +205,14 @@
       <div class="seg"><div class="n">SEG 03</div><div class="t">Multi-device / multi-platform owners</div><p class="need">Want one local store that merges Garmin plus imported Strava/other exports and de-duplicates. Strava's API change broke the cross-app history hub these users relied on.<sup class="c"><a href="#s4">4</a><a href="#s5">5</a></sup></p></div>
       <div class="seg"><div class="n">SEG 04</div><div class="t">Serious endurance &amp; quantified-self</div><p class="need">Want Intervals/Runalyze-grade training-load and physiology analytics. Community consensus is that these tools out-analyze Connect and Strava.<sup class="c"><a href="#s9">9</a><a href="#s10">10</a><a href="#s11">11</a></sup></p></div>
       <div class="seg"><div class="n">SEG 05</div><div class="t">Linux users</div><p class="need">Want a tool that simply works with a watch on Debian/Ubuntu, where Garmin ships no native desktop support and MTP transfer is painful and brittle.<sup class="c"><a href="#s7">7</a><a href="#s12">12</a><a href="#s14">14</a></sup></p></div>
-      <div class="seg seg-span"><div class="n">CROSS-CUTTING</div><div class="t">The unserved job-to-be-done</div><p class="need">"Plug in my watch and get a private, searchable, exportable database with analytics and an offline map — in one app I trust." No current product does all of this; Fenix5Sync's entire thesis is collapsing that toolchain into a single local-first application.</p></div>
+      <div class="seg seg-span"><div class="n">CROSS-CUTTING</div><div class="t">The unserved job-to-be-done</div><p class="need">"Plug in my watch and get a private, searchable, exportable database with analytics and an offline map — in one app I trust." No current product does all of this; Garminimax's entire thesis is collapsing that toolchain into a single local-first application.</p></div>
     </div>
   </section>
 
   <!-- ===================== C. GAP MATRIX ===================== -->
   <section id="matrix">
     <div class="sec-head"><span class="sec-tag">C</span><h2>Competitive gap matrix</h2></div>
-    <p>Across the field, strong cells cluster on the cloud incumbents (analytics, maps, wellness) and on the self-hosted tools (ownership) — but no row is complete. GoldenCheetah and GarminDB are the only genuinely local + direct-device options, and both are weak on maps and wellness, with GarminDB offering no GUI at all. The white space is the combination Fenix5Sync can own.</p>
+    <p>Across the field, strong cells cluster on the cloud incumbents (analytics, maps, wellness) and on the self-hosted tools (ownership) — but no row is complete. GoldenCheetah and GarminDB are the only genuinely local + direct-device options, and both are weak on maps and wellness, with GarminDB offering no GUI at all. The white space is the combination Garminimax can own.</p>
     <div class="scrollx">
     <table class="matrix">
       <thead>
@@ -235,7 +235,7 @@
         <tr><td class="tool">wger</td><td><span class="g s-strong">●</span></td><td><span class="g s-none">○</span></td><td><span class="g s-none">○</span></td><td><span class="g s-none">○</span></td><td><span class="g s-part">◐</span></td><td><span class="g s-strong">●</span></td></tr>
         <tr><td class="tool">Endurain / FitTrackee</td><td><span class="g s-strong">●</span></td><td><span class="g s-part">◐</span></td><td><span class="g s-part">◐</span></td><td><span class="g s-part">◐</span></td><td><span class="g s-none">○</span></td><td><span class="g s-part">◐</span></td></tr>
         <tr><td class="tool">GarminDB</td><td><span class="g s-strong">●</span></td><td><span class="g s-part">◐</span></td><td><span class="g s-part">◐</span></td><td><span class="g s-none">○</span></td><td><span class="g s-part">◐</span></td><td><span class="g s-none">○</span></td></tr>
-        <tr class="you"><td class="tool">Fenix5Sync ↗ target</td><td><span class="g s-strong">●</span></td><td><span class="g s-part">◐→●</span></td><td><span class="g s-strong">●</span></td><td><span class="g s-part">◐→●</span></td><td><span class="g s-part">◐</span></td><td><span class="g s-part">◐</span></td></tr>
+        <tr class="you"><td class="tool">Garminimax ↗ target</td><td><span class="g s-strong">●</span></td><td><span class="g s-part">◐→●</span></td><td><span class="g s-strong">●</span></td><td><span class="g s-part">◐→●</span></td><td><span class="g s-part">◐</span></td><td><span class="g s-part">◐</span></td></tr>
       </tbody>
     </table>
     </div>
@@ -243,7 +243,7 @@
       <span><b class="s-strong">●</b> strong</span>
       <span><b class="s-part">◐</b> partial</span>
       <span><b class="s-none">○</b> weak / absent</span>
-      <span style="color:var(--ink-3)">→ = direction Fenix5Sync should move</span>
+      <span style="color:var(--ink-3)">→ = direction Garminimax should move</span>
     </div>
   </section>
 
@@ -451,7 +451,7 @@
   <section id="method">
     <div class="sec-head"><span class="sec-tag">·</span><h2>Method, risks &amp; evidence quality</h2></div>
     <p>Sourcing prioritized recent primary material: vendor announcements (Strava, Garmin), tech press covering the backlash (TechRadar, gHacks, DC Rainmaker), and developer/community primary sources (Garmin forums, GitHub issues/discussions, Hacker News). <b>Strongest evidence</b> is the Connect+ backlash and the Strava API change, each corroborated across multiple 2024–25 sources. <b>Solid but older:</b> the Linux MTP/USB mechanics rest on 2019–22 primary sources that remain accurate but should be revalidated against current firmware. <b>Thin evidence, flagged in-line:</b> gear-mileage and PR-tracking demand are inferred from competitor parity, and the frequently cited "four location points re-identify most people" statistic should be checked against its primary study before being quoted.</p>
-    <p><b>Format &amp; legality note.</b> Reading and converting files from a device the user owns is well supported: GPX and TCX are open XML schemas, and Garmin's FIT SDK is free to use for decoding. The legal sensitivity sits with scraping Connect's web service — which Fenix5Sync sidesteps by reading local files and treating the device as strictly read-only. These are software tools processing sensor-derived numbers, not diagnostic outputs, so no CE / ISO 13485 medical-device obligations attach.<sup class="c"><a href="#s16">16</a><a href="#s17">17</a><a href="#s21">21</a></sup> The main interop risk is FIT format churn: Garmin mandated profile changes (effective late 2023) that not all platforms adopted, so multisport and newer files can trip naive parsers — robust, SDK-grade decoding is the mitigation.<sup class="c"><a href="#s15">15</a></sup></p>
+    <p><b>Format &amp; legality note.</b> Reading and converting files from a device the user owns is well supported: GPX and TCX are open XML schemas, and Garmin's FIT SDK is free to use for decoding. The legal sensitivity sits with scraping Connect's web service — which Garminimax sidesteps by reading local files and treating the device as strictly read-only. These are software tools processing sensor-derived numbers, not diagnostic outputs, so no CE / ISO 13485 medical-device obligations attach.<sup class="c"><a href="#s16">16</a><a href="#s17">17</a><a href="#s21">21</a></sup> The main interop risk is FIT format churn: Garmin mandated profile changes (effective late 2023) that not all platforms adopted, so multisport and newer files can trip naive parsers — robust, SDK-grade decoding is the mitigation.<sup class="c"><a href="#s15">15</a></sup></p>
   </section>
 
   <!-- ===================== SOURCES ===================== -->
@@ -483,7 +483,7 @@
     </ol>
   </section>
 
-  <div class="foot">Fenix5Sync roadmap brief · compiled June 2026 from public primary sources · matrix and RICE estimates are analyst judgment, not benchmarked measurements — revalidate before committing engineering quarters.</div>
+  <div class="foot">Garminimax roadmap brief · compiled June 2026 from public primary sources · matrix and RICE estimates are analyst judgment, not benchmarked measurements — revalidate before committing engineering quarters.</div>
 
 </div>
 </div>

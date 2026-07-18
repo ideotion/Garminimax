@@ -161,7 +161,7 @@ class SourceModel(BaseModel):
     extra_mount_roots: list[str] = Field(default_factory=list)
     activity_subdir: str = "GARMIN/Activity"
     monitoring_subdir: str = "GARMIN/Monitor"
-    mtp_mountpoint: str = "~/.cache/fenix5sync/mtp"
+    mtp_mountpoint: str = "~/.cache/garminimax/mtp"
     recursive: bool = False
     formats: list[str] = Field(default_factory=list)
 

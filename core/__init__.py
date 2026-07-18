@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Fenix5Sync core library.
+"""Garminimax core library.
 
 A pure-Python toolkit to acquire, deduplicate, parse, store, search and export
 Garmin Fenix 5 activity data. It has no dependency on the web API or the CLI and
@@ -82,7 +82,7 @@ from .zones import ZoneBin, compute_zones, hr_zones, power_zones
 # distribution metadata so it never drifts. Falls back when running from a raw
 # (uninstalled) source tree.
 try:
-    __version__ = _pkg_version("fenix5sync")
+    __version__ = _pkg_version("garminimax")
 except PackageNotFoundError:  # pragma: no cover - only when not pip-installed
     __version__ = "0.0.0+local"
 

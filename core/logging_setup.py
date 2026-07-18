@@ -12,7 +12,7 @@ import sys
 from datetime import date
 from pathlib import Path
 
-LOGGER_NAME = "fenix5sync"
+LOGGER_NAME = "garminimax"
 _LOG_FORMAT = "%(asctime)s %(levelname)-7s [%(name)s] %(message)s"
 _DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
@@ -20,7 +20,7 @@ _DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 def log_file_for(log_dir: Path, on: date | None = None) -> Path:
     """Path of the dated log file for a given day (today by default)."""
     on = on or date.today()
-    return log_dir / f"fenix5sync-{on.isoformat()}.log"
+    return log_dir / f"garminimax-{on.isoformat()}.log"
 
 
 def setup_logging(
@@ -30,7 +30,7 @@ def setup_logging(
 ) -> logging.Logger:
     """Configure and return the package logger.
 
-    Writes to ``<log_dir>/fenix5sync-YYYY-MM-DD.log`` and (optionally) stderr.
+    Writes to ``<log_dir>/garminimax-YYYY-MM-DD.log`` and (optionally) stderr.
     Safe to call multiple times.
     """
     log_dir = Path(log_dir)

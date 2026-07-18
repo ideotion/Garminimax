@@ -30,7 +30,7 @@ def pack() -> dict:
 
 
 def test_schema_and_generated_date(pack):
-    assert pack["schema"] == "fenix5sync.coach.evidence.v1"
+    assert pack["schema"] == "garminimax.coach.evidence.v1"
     assert re.fullmatch(r"\d{4}-\d{2}-\d{2}", pack["generated"]), "generated must be YYYY-MM-DD"
     assert pack["summary"].strip()
 

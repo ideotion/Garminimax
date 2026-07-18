@@ -1,5 +1,5 @@
 # Evidence-Based "Sports at Home" Curation Report
-## Foundation deliverable for the Fenix5Sync furniture-and-objects home-training knowledge base
+## Foundation deliverable for the Garminimax furniture-and-objects home-training knowledge base
 
 Status: Curation report (evidence foundation) + benefits-by-population table + bibliography for the new **Sports at Home** coaching category. This is the document every downstream artifact (movement library, object library, session library, screening logic, animation/figure specs, personalization rules) must cite back to.
 
@@ -195,7 +195,7 @@ Features are grouped and prioritised. Priority reflects evidence-anchoring stren
 
 ## 11. UI and the animated form-model engine (first-class UX)
 
-The category's defining interaction is *watching the right movement and copying it*, with the object visibly in place. The recommended approach is a lightweight, offline, dependency-free **SVG form-model engine** rather than video, for four reasons that match Fenix5Sync's constraints: it ships inside the bundle with no streaming, it themes with the existing CSS variables, it scales crisply on any screen, and a single parametric model can render the whole library by swapping pose keyframes and an object glyph.
+The category's defining interaction is *watching the right movement and copying it*, with the object visibly in place. The recommended approach is a lightweight, offline, dependency-free **SVG form-model engine** rather than video, for four reasons that match Garminimax's constraints: it ships inside the bundle with no streaming, it themes with the existing CSS variables, it scales crisply on any screen, and a single parametric model can render the whole library by swapping pose keyframes and an object glyph.
 
 **11.1 The model.** A figure is a small set of named joints (head, shoulders, elbows, wrists, hips, knees, ankles) as 2-D coordinates. A *movement* is a short list of **keyframe poses** (e.g., sit-to-stand: `seated → lean → mid-rise → stand`). The engine interpolates joint positions between keyframes; the body is drawn as rounded "bone" segments plus a head, deliberately a clean silhouette rather than anatomical realism, so it reads instantly and never looks uncanny.
 

@@ -1,7 +1,7 @@
-# Fenix5Sync
+# Garminimax
 
 **Local-first, offline archive for your Garmin Fenix 5.** Plug the watch into a
-Debian/Ubuntu machine over USB and Fenix5Sync extracts your activities, stores
+Debian/Ubuntu machine over USB and Garminimax extracts your activities, stores
 them losslessly on disk, and shows them in a clean local web GUI — with charts
 and an offline GPS track plot. No Garmin account, no Garmin software, **no
 network access at runtime**, no telemetry. The watch is treated as **strictly
@@ -12,7 +12,12 @@ kept as the canonical source, parsed into a queryable SQLite database, and can b
 exported as CSV, JSON, GPX, TCX, the original raw file, or a full-fidelity NDJSON
 archive for later analysis — optionally anonymized for safe sharing.
 
-Repository: <https://github.com/ideotion/Fenix5Sync>
+> **Tested hardware.** Garminimax has only been tested with a **Garmin Fenix 5**
+> smartwatch. The import pipeline is format-based (`.FIT` / `.TCX` / `.GPX`) and
+> should in principle work with other Garmin devices and platforms, but those
+> paths are **unverified** — expect rough edges, and please report what you find.
+
+Repository: <https://github.com/ideotion/Garminimax>
 
 ---
 
@@ -26,7 +31,9 @@ Repository: <https://github.com/ideotion/Fenix5Sync>
   analysis are always possible.
 - **More than FIT.** Imports `.FIT`, `.TCX` and `.GPX` from a folder, a single
   file or a `.zip` — so exports from other watches/platforms (Coros, Suunto,
-  Wahoo, Polar, Strava, Komoot, …) land in the same local archive.
+  Wahoo, Polar, Strava, Komoot, …) should land in the same local archive too.
+  (Format-based and unverified — see the *Tested hardware* note above; only the
+  Fenix 5 has actually been tested.)
 - **Export anywhere, privately.** Re-share to **Garmin Connect** (TCX / original
   FIT) or any app (universal GPX) — with **opt-in anonymization** that scrubs GPS
   near home/finish, strips device & personal data, and can shift dates. It's a
@@ -48,10 +55,10 @@ to re-run.
 ### 1. One-line install (bootstrap)
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/ideotion/Fenix5Sync/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ideotion/Garminimax/main/install.sh | bash
 ```
 
-This clones the repo to `~/.local/share/fenix5sync`, installs system and Python
+This clones the repo to `~/.local/share/garminimax`, installs system and Python
 dependencies, writes a default config, creates a launcher, and opens the GUI.
 
 ### 2. Inspect-before-run (recommended)
@@ -60,7 +67,7 @@ Piping a script straight into a shell means trusting it sight-unseen. To read it
 first:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/ideotion/Fenix5Sync/main/install.sh -o install.sh
+curl -fsSL https://raw.githubusercontent.com/ideotion/Garminimax/main/install.sh -o install.sh
 less install.sh        # review it
 bash install.sh
 ```
@@ -68,8 +75,8 @@ bash install.sh
 ### 3. Manual install (clone, then run)
 
 ```sh
-git clone https://github.com/ideotion/Fenix5Sync.git
-cd Fenix5Sync
+git clone https://github.com/ideotion/Garminimax.git
+cd Garminimax
 ./install.sh
 ```
 
@@ -83,16 +90,16 @@ git and installs that working copy in place (it won't re-clone).
    `python3`, `python3-venv`, `python3-pip`, `jmtpfs` (MTP watches), `gpsbabel`
    (GPX export).
 3. Creates a Python virtualenv (`.venv`) and installs the package + dependencies.
-4. Writes a default config to `~/.config/fenix5sync/config.yaml` if none exists.
-5. Generates a launcher (`~/.local/bin/fenix5sync`), an XDG `.desktop` entry, and
+4. Writes a default config to `~/.config/garminimax/config.yaml` if none exists.
+5. Generates a launcher (`~/.local/bin/garminimax`), an XDG `.desktop` entry, and
    a `systemd --user` unit for optional auto-start.
 6. Starts the server on `127.0.0.1` and opens your browser.
 
-Environment overrides: `F5S_PORT`, `F5S_DIR`, `F5S_REPO_URL`, `F5S_BRANCH`,
-`F5S_NO_LAUNCH=1` (skip auto-launch).
+Environment overrides: `GMX_PORT`, `GMX_DIR`, `GMX_REPO_URL`, `GMX_BRANCH`,
+`GMX_NO_LAUNCH=1` (skip auto-launch).
 
 > **Note on the install URL/branch:** the one-liner points at the `main` branch.
-> If you're installing from a feature branch, pass `F5S_BRANCH=<branch>` or use
+> If you're installing from a feature branch, pass `GMX_BRANCH=<branch>` or use
 > the manual clone path.
 
 ---
@@ -143,30 +150,30 @@ API docs (development) are at `/docs`.
 Any of:
 
 ```sh
-fenix5sync serve --open                 # if ~/.local/bin is on your PATH
-~/.local/share/fenix5sync/.venv/bin/fenix5sync serve --open
-systemctl --user enable --now fenix5sync.service   # auto-start on login
+garminimax serve --open                 # if ~/.local/bin is on your PATH
+~/.local/share/garminimax/.venv/bin/garminimax serve --open
+systemctl --user enable --now garminimax.service   # auto-start on login
 ```
 
-…or launch **Fenix5Sync** from your desktop application menu.
+…or launch **Garminimax** from your desktop application menu.
 
 ### CLI (dev / headless)
 
 ```sh
-fenix5sync sync                  # import new activities from the watch
-fenix5sync list --sport running  # search the local store
-fenix5sync show 12               # one activity's summary + laps
-fenix5sync export 12 --format tcx      # per-activity (csv|json|gpx|tcx|raw)
-fenix5sync export 12 -f gpx --anonymize # scrub location & sensitive data
-fenix5sync export --bulk --format csv
-fenix5sync salvage broken.fit --import # recover a corrupt/truncated FIT file
-fenix5sync archive               # full-fidelity NDJSON archive of everything
-fenix5sync plan -g 10k --target-date 2026-09-30 --time 50:00 --ics plan.ics  # objective -> dated plan + calendar
-fenix5sync serve --open          # run the GUI/API
-fenix5sync init-config           # write a default config file
+garminimax sync                  # import new activities from the watch
+garminimax list --sport running  # search the local store
+garminimax show 12               # one activity's summary + laps
+garminimax export 12 --format tcx      # per-activity (csv|json|gpx|tcx|raw)
+garminimax export 12 -f gpx --anonymize # scrub location & sensitive data
+garminimax export --bulk --format csv
+garminimax salvage broken.fit --import # recover a corrupt/truncated FIT file
+garminimax archive               # full-fidelity NDJSON archive of everything
+garminimax plan -g 10k --target-date 2026-09-30 --time 50:00 --ics plan.ics  # objective -> dated plan + calendar
+garminimax serve --open          # run the GUI/API
+garminimax init-config           # write a default config file
 ```
 
-Pass `--config /path/to/config.yaml` (or set `FENIX5SYNC_CONFIG`) to any command.
+Pass `--config /path/to/config.yaml` (or set `GARMINIMAX_CONFIG`) to any command.
 
 ### Using the core library directly
 
@@ -186,7 +193,7 @@ with Store(cfg.storage.db_path) as store:
 ## Configuration
 
 A single YAML file drives everything (default:
-`~/.config/fenix5sync/config.yaml`; see [`config.example.yaml`](config.example.yaml)
+`~/.config/garminimax/config.yaml`; see [`config.example.yaml`](config.example.yaml)
 for the fully-documented template). Key sections:
 
 | Section   | What it controls                                                        |
@@ -201,19 +208,19 @@ for the fully-documented template). Key sections:
 | `logging` | log dir, level                                                          |
 
 **Device connection.** The Fenix 5 connects either as USB **mass storage** (it
-appears as a drive — Fenix5Sync scans the usual mountpoints for `GARMIN/Activity`)
+appears as a drive — Garminimax scans the usual mountpoints for `GARMIN/Activity`)
 or via **MTP** (mounted on demand with `jmtpfs`). `mode: auto` tries mass storage
 then MTP. If auto-detection misses your setup, set `source.mode: path` and point
 `source.path` at the activity folder (or use `gio mount` and point at the gvfs
 path). Unlock the watch and allow file access when prompted.
 
-**Importing other formats & sources.** Fenix5Sync imports `.FIT`, `.TCX` and
+**Importing other formats & sources.** Garminimax imports `.FIT`, `.TCX` and
 `.GPX`, detected by content (not just extension). Beyond a connected watch, point
 it at files you already have:
 
 ```sh
 # a folder of mixed exports (optionally recursive)
-fenix5sync --config <(echo 'source: {mode: folder, path: ~/exports, recursive: true}') sync
+garminimax --config <(echo 'source: {mode: folder, path: ~/exports, recursive: true}') sync
 ```
 
 Or set in `config.yaml`:
@@ -238,7 +245,7 @@ You can also edit config from the API (`GET`/`PUT /api/config`); a non-loopback
 
 ## Long-term archival & data formats
 
-Capturing the data durably is the point; analysis comes later. Fenix5Sync keeps
+Capturing the data durably is the point; analysis comes later. Garminimax keeps
 your data in three complementary forms:
 
 1. **Raw `.FIT`** — the canonical, lossless source of truth, content-addressed in
@@ -246,7 +253,7 @@ your data in three complementary forms:
 2. **SQLite** — a single self-contained, indexed, queryable database
    (`activities`, `laps`, `trackpoints`, `import_ledger`). SQLite is a stable,
    well-documented archival format with excellent long-term tooling.
-3. **NDJSON archive** — `fenix5sync archive` (or Export → *Long-term archive*)
+3. **NDJSON archive** — `garminimax archive` (or Export → *Long-term archive*)
    writes one complete activity per line, with the full time series, laps and
    every FIT field (units included). It's portable, append/stream-friendly, and
    loads directly into pandas / DuckDB / `jq` — and converts cleanly to columnar
@@ -271,15 +278,15 @@ All exports run locally; nothing leaves your machine.
 ## Development
 
 ```sh
-git clone https://github.com/ideotion/Fenix5Sync.git
-cd Fenix5Sync
+git clone https://github.com/ideotion/Garminimax.git
+cd Garminimax
 python3 -m venv .venv && . .venv/bin/activate
 pip install -e ".[test,dev]"
 pytest                 # core (parse->store->export, dedupe, search) + API tests
 ruff check .                                       # lint
 bandit -ll -c pyproject.toml -r core server cli    # security (medium+)
 pip-audit                                           # dependency vulnerabilities
-fenix5sync serve --open
+garminimax serve --open
 ```
 
 CI runs the same lint, security and test checks. See
@@ -356,7 +363,7 @@ exported **copy**; the stored archive is never modified. Configurable scrubbing
 
 ## Privacy & safety
 
-- The watch filesystem is **read-only**; Fenix5Sync only copies files off it.
+- The watch filesystem is **read-only**; Garminimax only copies files off it.
 - The server binds to `127.0.0.1` and makes **no network calls** at runtime.
 - No Garmin account, no cloud, no telemetry. Your data stays on your machine.
 - Sharing a file? **Anonymize** it on export to scrub location and personal data

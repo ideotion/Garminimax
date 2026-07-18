@@ -3,7 +3,7 @@
 
 Dumps (portable input -> core output) pairs for the JS engine port to match, so
 the browser analytics can never silently drift from core/. Run from the
-Fenix5Sync checkout:  python tools/gen_golden.py > test/golden.json
+Garminimax checkout:  python tools/gen_golden.py > test/golden.json
 
 Each case carries `activities` (plain dicts), `athlete`, optional `as_of` /
 `wellness`, and the core's `training_load` + `coach_state` outputs.
@@ -15,8 +15,9 @@ import json
 import sys
 from pathlib import Path
 
-# Import the canonical engine from the Fenix5Sync checkout.
-sys.path.insert(0, str(Path(__file__).resolve().parents[3]) if False else "/home/user/Fenix5Sync")
+# Import the canonical engine from the Garminimax checkout (repo root is two
+# levels up from webapp/tools/).
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from core import compute_coach_state, compute_training_load  # noqa: E402
 from core.config import AthleteConfig  # noqa: E402
 from core.models import Activity  # noqa: E402
@@ -96,7 +97,7 @@ def main():
              wellness_days=[wellness(28 + i, 50) for i in range(6)] + [wellness(34, 58)]),
         case("empty_history", [], hr_ath, as_of="2024-02-05"),
     ]
-    json.dump({"generated_from": "fenix5sync core", "cases": cases}, sys.stdout, indent=1)
+    json.dump({"generated_from": "garminimax core", "cases": cases}, sys.stdout, indent=1)
     sys.stdout.write("\n")
 
 

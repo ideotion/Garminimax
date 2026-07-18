@@ -9,8 +9,8 @@ const HomeView = (() => {
   let data = null, library = null;
 
   // ---- PAR-Q+-style screen (client-only; stored in localStorage) ----
-  const SCREEN_KEY = "f5s-home-screen";
-  const STS_KEY = "f5s-home-sts";
+  const SCREEN_KEY = "gmx-home-screen";
+  const STS_KEY = "gmx-home-sts";
   const PARQ = [
     "Has a doctor ever said you have a heart condition or high blood pressure?",
     "Do you feel pain in your chest at rest, in daily life, or during physical activity?",
@@ -103,7 +103,7 @@ const HomeView = (() => {
 
   // ---------- guided movement (form-model engine) ----------
   let guidedHost = null, player = null, currentEx = null;
-  const ENGINE_KEY = "f5s-home-engine";
+  const ENGINE_KEY = "gmx-home-engine";
   function getEngine() { try { return localStorage.getItem(ENGINE_KEY) === "3d" ? "3d" : "2d"; } catch (_) { return "2d"; } }
   function setEngine(v) { try { localStorage.setItem(ENGINE_KEY, v); } catch (_) {} }
   function engineApi() { return getEngine() === "3d" && typeof FormModel3D !== "undefined" ? FormModel3D : FormModel; }
@@ -252,8 +252,8 @@ const HomeView = (() => {
   }
 
   // ---------- session builder (balanced, time-budgeted) ----------
-  const BUILD_KEY = "f5s-home-builder";
-  const SEED_KEY = "f5s-home-seed";
+  const BUILD_KEY = "gmx-home-builder";
+  const SEED_KEY = "gmx-home-seed";
   function loadBuild() { try { return JSON.parse(localStorage.getItem(BUILD_KEY)) || {}; } catch (_) { return {}; } }
   function saveBuild(b) { try { localStorage.setItem(BUILD_KEY, JSON.stringify(b)); } catch (_) {} }
   function nextSeed() {

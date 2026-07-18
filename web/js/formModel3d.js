@@ -16,7 +16,7 @@ const FormModel3D = (() => {
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
   const DEG = Math.PI / 180;
 
-  const PREF_KEY = "f5s-fm3d-prefs";
+  const PREF_KEY = "gmx-fm3d-prefs";
   // `yaw` is a viewing OFFSET from each exercise's authored angle (side -> profile,
   // front -> frontal), so every movement renders at the angle it was authored for.
   const DEFAULTS = { yaw: 0, pitch: 8, shading: true };

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Configuration loading for Fenix5Sync.
+"""Configuration loading for Garminimax.
 
 A single YAML file drives source path/mode, storage and DB locations, export
 dir, server host/port, dedupe policy and log level. The core is usable with no
@@ -18,9 +18,9 @@ from typing import Any
 import yaml
 
 # Search order for an existing config file when none is passed explicitly.
-ENV_CONFIG_VAR = "FENIX5SYNC_CONFIG"
+ENV_CONFIG_VAR = "GARMINIMAX_CONFIG"
 DEFAULT_CONFIG_PATHS = (
-    "~/.config/fenix5sync/config.yaml",
+    "~/.config/garminimax/config.yaml",
     "./config.yaml",
 )
 
@@ -37,16 +37,16 @@ class SourceConfig:
     extra_mount_roots: list[str] = field(default_factory=list)
     activity_subdir: str = "GARMIN/Activity"
     monitoring_subdir: str = "GARMIN/Monitor"  # wellness (steps/HR/stress) files
-    mtp_mountpoint: str = "~/.cache/fenix5sync/mtp"
+    mtp_mountpoint: str = "~/.cache/garminimax/mtp"
     recursive: bool = False  # descend into subdirectories (folder/zip/path dirs)
     formats: list[str] = field(default_factory=list)  # restrict to these; empty = all
 
 
 @dataclass
 class StorageConfig:
-    data_dir: str = "~/.local/share/fenix5sync/data"
+    data_dir: str = "~/.local/share/garminimax/data"
     raw_subdir: str = "raw"
-    db_file: str = "~/.local/share/fenix5sync/data/fenix5sync.sqlite"
+    db_file: str = "~/.local/share/garminimax/data/garminimax.sqlite"
 
     @property
     def raw_dir(self) -> Path:
@@ -59,7 +59,7 @@ class StorageConfig:
 
 @dataclass
 class ExportConfig:
-    output_dir: str = "~/.local/share/fenix5sync/exports"
+    output_dir: str = "~/.local/share/garminimax/exports"
     gpsbabel_bin: str = "gpsbabel"
 
     @property
@@ -113,7 +113,7 @@ class ServerConfig:
 
 @dataclass
 class LoggingConfig:
-    log_dir: str = "~/.local/share/fenix5sync/logs"
+    log_dir: str = "~/.local/share/garminimax/logs"
     level: str = "INFO"
 
     @property

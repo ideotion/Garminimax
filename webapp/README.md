@@ -1,6 +1,6 @@
-# Fenix5Sync Web — offline, in-browser Garmin analyzer
+# Garminimax Web — offline, in-browser Garmin analyzer
 
-A fully client-side port of Fenix5Sync's analytics: pick your `.FIT` files, and
+A fully client-side port of Garminimax's analytics: pick your `.FIT` files, and
 your **fitness / fatigue / form** and **dynamic-coach state** are computed
 **entirely in the browser**. Your data is never uploaded — the page is static and
 the only network calls fetch two code libraries (swappable for local copies).
@@ -20,7 +20,7 @@ Python core**, and `test/engine.test.mjs` asserts the JS engine reproduces them.
 npm test          # runs node --test → 14 parity checks against golden.json
 ```
 
-Regenerate the fixtures whenever the Python core changes (from a Fenix5Sync checkout):
+Regenerate the fixtures whenever the Python core changes (from a Garminimax checkout):
 
 ```
 python tools/gen_golden.py > test/golden.json
@@ -89,4 +89,4 @@ Vendor the two runtime libraries so nothing is fetched at load: download
 
 ## License
 
-GPL-3.0-or-later, matching Fenix5Sync. `fit-file-parser` is MIT; Chart.js is MIT.
+GPL-3.0-or-later, matching Garminimax. `fit-file-parser` is MIT; Chart.js is MIT.

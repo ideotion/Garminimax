@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Report a problem with Fenix5Sync
+about: Report a problem with Garminimax
 title: "[bug] "
 labels: bug
 ---
@@ -28,11 +28,11 @@ What you expected to happen.
 
 - OS / distribution:
 - Python version (`python3 --version`):
-- Fenix5Sync version / commit:
+- Garminimax version / commit:
 - Install method (one-line / manual / `pip install -e .`):
 - Acquisition mode (`auto`/`mass_storage`/`mtp`/`path`/`folder`/`file`/`zip`):
 - Watch / device model (if relevant):
 
 ## Logs
 
-Relevant lines from `~/.local/share/fenix5sync/logs/` (scrub anything sensitive).
+Relevant lines from `~/.local/share/garminimax/logs/` (scrub anything sensitive).

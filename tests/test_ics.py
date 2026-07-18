@@ -10,9 +10,9 @@ from core.ics import IcsEvent, parse_calendar, write_calendar
 
 def _events():
     return [
-        IcsEvent(uid="a@fenix5sync", day=date(2026, 7, 1), summary="Easy run - 40 min",
+        IcsEvent(uid="a@garminimax", day=date(2026, 7, 1), summary="Easy run - 40 min",
                  description="Easy aerobic; conversational.\nTarget: 5:30/km · RPE 3-4/10"),
-        IcsEvent(uid="b@fenix5sync", day=date(2026, 7, 3), summary="Intervals",
+        IcsEvent(uid="b@garminimax", day=date(2026, 7, 3), summary="Intervals",
                  description="6x800m; semicolons; commas, and \\ backslashes."),
     ]
 
@@ -22,7 +22,7 @@ def test_calendar_has_envelope_and_one_event_each():
     assert ics.startswith("BEGIN:VCALENDAR\r\n")
     assert ics.rstrip().endswith("END:VCALENDAR")
     assert ics.count("BEGIN:VEVENT") == 2 and ics.count("END:VEVENT") == 2
-    assert "VERSION:2.0" in ics and "PRODID:-//Fenix5Sync//Coach Plan//EN" in ics
+    assert "VERSION:2.0" in ics and "PRODID:-//Garminimax//Coach Plan//EN" in ics
 
 
 def test_lines_are_crlf_terminated():
@@ -42,7 +42,7 @@ def test_text_is_escaped_and_round_trips():
     ics = write_calendar(_events())
     parsed = parse_calendar(ics)
     assert len(parsed) == 2
-    assert parsed[0]["UID"] == "a@fenix5sync"
+    assert parsed[0]["UID"] == "a@garminimax"
     assert parsed[0]["SUMMARY"] == "Easy run - 40 min"
     # Newlines, semicolons, commas and backslashes survive the round-trip.
     assert "\n" in parsed[0]["DESCRIPTION"]

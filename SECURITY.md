@@ -1,6 +1,6 @@
 # Security Policy
 
-Fenix5Sync is a **local-first, offline** tool. By design it:
+Garminimax is a **local-first, offline** tool. By design it:
 
 - treats the connected watch as **strictly read-only** — it never writes to the device;
 - binds its server to **loopback only** (`127.0.0.1`), enforced in

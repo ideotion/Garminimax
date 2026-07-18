@@ -29,7 +29,7 @@ const FormModel = (() => {
   const DEG = (Geom && Geom.DEG) || Math.PI / 180;
 
   // ---- shared, persisted preferences ----
-  const PREF_KEY = "f5s-fm-prefs";
+  const PREF_KEY = "gmx-fm-prefs";
   const DEFAULTS = {
     trails: true, ring: true, shading: true, sound: false,
     figure: "minimal", character: "neutral",

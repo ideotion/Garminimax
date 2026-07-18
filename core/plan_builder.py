@@ -509,7 +509,7 @@ def agenda_to_ics(agenda: CoachAgenda, *, now: datetime | None = None) -> str:
             lines.append(tgt)
         lines.append(f"Phase: {s['phase']} · basis: VDOT/Riegel/Karvonen/RPE (evidence-graded; estimates, not medical advice)")
         events.append(IcsEvent(
-            uid=f"{s['date']}-{s['kind']}@fenix5sync",
+            uid=f"{s['date']}-{s['kind']}@garminimax",
             day=date.fromisoformat(s["date"]),
             summary=title, description="\n".join(lines),
         ))

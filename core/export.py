@@ -193,7 +193,7 @@ def _builtin_gpx(activity: Activity) -> str:
     name = escape(f"{activity.sport or 'activity'} {activity.start_time or ''}".strip())
     lines = [
         '<?xml version="1.0" encoding="UTF-8"?>',
-        '<gpx version="1.1" creator="Fenix5Sync" '
+        '<gpx version="1.1" creator="Garminimax" '
         'xmlns="http://www.topografix.com/GPX/1/1" '
         'xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1">',
         f"  <trk><name>{name}</name><trkseg>",
@@ -488,6 +488,6 @@ def write_archive(activities: Sequence[Activity], output_dir: str | Path) -> Pat
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     ts = _dt.datetime.now().strftime("%Y%m%d-%H%M%S")
-    path = output_dir / f"fenix5sync-archive-{ts}.ndjson"
+    path = output_dir / f"garminimax-archive-{ts}.ndjson"
     path.write_text(activities_ndjson(activities, include_series=True), encoding="utf-8")
     return path

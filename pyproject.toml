@@ -3,9 +3,9 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "fenix5sync"
+name = "garminimax"
 version = "0.1.0"
-description = "Local-first, offline tool to extract and browse Garmin Fenix 5 activity data over USB. No account, no cloud, read-only device."
+description = "Local-first, offline tool to extract and browse Garmin activity data over USB — tested only with the Garmin Fenix 5. No account, no cloud, read-only device."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "GPL-3.0-or-later" }
@@ -40,11 +40,11 @@ dev = [
 ]
 
 [project.scripts]
-fenix5sync = "cli.main:app"
+garminimax = "cli.main:app"
 
 [project.urls]
-Homepage = "https://github.com/ideotion/Fenix5Sync"
-Repository = "https://github.com/ideotion/Fenix5Sync"
+Homepage = "https://github.com/ideotion/Garminimax"
+Repository = "https://github.com/ideotion/Garminimax"
 
 [tool.setuptools]
 packages = ["core", "core.importers", "server", "cli"]

@@ -1,16 +1,18 @@
-# Fenix5Sync configuration
+# Garminimax configuration
 # ------------------------
 # This is the documented template. On first install, install.sh copies it to
-#   ~/.config/fenix5sync/config.yaml
+#   ~/.config/garminimax/config.yaml
 # if no config exists there. Edit that file (not this template) to customise.
 #
 # All paths may use ~ (expanded to your home dir) and environment variables.
 # There are NO hard-coded paths in the code: everything is driven from here.
 
 # ---- Activity acquisition ---------------------------------------------------
-# Files of any supported format are imported: FIT, TCX and GPX. This means the
-# same pipeline ingests exports from other watches/platforms (Coros, Suunto,
-# Wahoo, Polar, Strava, Komoot, phone apps, ...), not just a Fenix 5 over USB.
+# Files of any supported format are imported: FIT, TCX and GPX. In principle the
+# same pipeline can ingest exports from other watches/platforms (Coros, Suunto,
+# Wahoo, Polar, Strava, Komoot, phone apps, ...) as well as a Fenix 5 over USB --
+# but only the Fenix 5 has actually been tested; those other paths are
+# format-based and unverified.
 source:
   # mode: where to read activities from.
   #   auto         -> try `path` hint, then mass-storage mount points, then MTP
@@ -40,7 +42,7 @@ source:
   activity_subdir: "GARMIN/Activity"
 
   # Temporary mountpoint used for MTP mode.
-  mtp_mountpoint: "~/.cache/fenix5sync/mtp"
+  mtp_mountpoint: "~/.cache/garminimax/mtp"
 
   # Descend into subdirectories when scanning a folder/zip/path directory.
   recursive: false
@@ -52,15 +54,15 @@ source:
 # ---- Local storage ----------------------------------------------------------
 storage:
   # Root for everything local. Raw FIT files live under <data_dir>/raw,
-  # the SQLite DB at <data_dir>/fenix5sync.sqlite by default.
-  data_dir: "~/.local/share/fenix5sync/data"
+  # the SQLite DB at <data_dir>/garminimax.sqlite by default.
+  data_dir: "~/.local/share/garminimax/data"
   raw_subdir: "raw"
-  db_file: "~/.local/share/fenix5sync/data/fenix5sync.sqlite"
+  db_file: "~/.local/share/garminimax/data/garminimax.sqlite"
 
 # ---- Export -----------------------------------------------------------------
 export:
   # Default output directory for exports (CSV / JSON / GPX / TCX / raw).
-  output_dir: "~/.local/share/fenix5sync/exports"
+  output_dir: "~/.local/share/garminimax/exports"
   # Path to the gpsbabel binary used for optional GPX export. If missing,
   # GPX export falls back to a built-in writer (export still works offline).
   gpsbabel_bin: "gpsbabel"
@@ -107,7 +109,7 @@ server:
 
 # ---- Logging ----------------------------------------------------------------
 logging:
-  # Directory for dated log files (fenix5sync-YYYY-MM-DD.log).
-  log_dir: "~/.local/share/fenix5sync/logs"
+  # Directory for dated log files (garminimax-YYYY-MM-DD.log).
+  log_dir: "~/.local/share/garminimax/logs"
   # One of: DEBUG, INFO, WARNING, ERROR
   level: "INFO"

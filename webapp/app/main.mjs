@@ -10,7 +10,7 @@ const $ = (id) => document.getElementById(id);
 const todayUTC = () => new Date().toISOString().slice(0, 10);
 
 // ---- athlete thresholds (persisted locally) ----
-const ATH_KEY = "f5s-athlete";
+const ATH_KEY = "gmx-athlete";
 function loadAthlete() {
   let a = {}; try { a = JSON.parse(localStorage.getItem(ATH_KEY)) || {}; } catch (_) {}
   $("maxhr").value = a.max_heart_rate || "";
