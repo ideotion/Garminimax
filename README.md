@@ -1,6 +1,10 @@
 # Garminimax
 
-**Local-first, offline archive for your Garmin Fenix 5.** Plug the watch into a
+*Extract and browse your Garmin activity data locally over USB — no account, no
+cloud, read-only device. Designed for Garmin watches in general, though tested so
+far only with the Fenix 5.*
+
+**Local-first, offline archive for your Garmin watch.** Plug the watch into a
 Debian/Ubuntu machine over USB and Garminimax extracts your activities, stores
 them losslessly on disk, and shows them in a clean local web GUI — with charts
 and an offline GPS track plot. No Garmin account, no Garmin software, **no
@@ -12,10 +16,12 @@ kept as the canonical source, parsed into a queryable SQLite database, and can b
 exported as CSV, JSON, GPX, TCX, the original raw file, or a full-fidelity NDJSON
 archive for later analysis — optionally anonymized for safe sharing.
 
-> **Tested hardware.** Garminimax has only been tested with a **Garmin Fenix 5**
-> smartwatch. The import pipeline is format-based (`.FIT` / `.TCX` / `.GPX`) and
-> should in principle work with other Garmin devices and platforms, but those
-> paths are **unverified** — expect rough edges, and please report what you find.
+> **Which watches?** Garminimax is **not Fenix-5-only** — it's built to be
+> device-agnostic, working with any Garmin watch that exposes its activities over
+> USB (a `GARMIN/Activity` folder of `.FIT` / `.TCX` / `.GPX` files), and it also
+> imports exports from other platforms. So far, though, only the **Garmin Fenix 5**
+> has actually been tested; other Garmin devices should work but are **unverified**
+> — expect rough edges, and please report what you find.
 
 Repository: <https://github.com/ideotion/Garminimax>
 
