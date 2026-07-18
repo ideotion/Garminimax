@@ -1,5 +1,8 @@
 # Garminimax
 
+*Extract and browse your Garmin activity data locally over USB — no account, no
+cloud, read-only device. Tested only with the Garmin Fenix 5.*
+
 **Local-first, offline archive for your Garmin Fenix 5.** Plug the watch into a
 Debian/Ubuntu machine over USB and Garminimax extracts your activities, stores
 them losslessly on disk, and shows them in a clean local web GUI — with charts
