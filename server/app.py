@@ -20,7 +20,7 @@ from .progress import JobManager
 from .routes import router
 
 WEB_DIR = Path(__file__).resolve().parent.parent / "web"
-DEFAULT_CONFIG_PATH = "~/.config/fenix5sync/config.yaml"
+DEFAULT_CONFIG_PATH = "~/.config/garminimax/config.yaml"
 
 
 def _resolve_config_path(config_path: str | None, cfg: Config) -> Path:
@@ -52,7 +52,7 @@ def create_app(config_path: str | None = None) -> FastAPI:
     setup_logging(cfg.logging.log_path, cfg.logging.level)
 
     app = FastAPI(
-        title="Fenix5Sync",
+        title="Garminimax",
         version=__version__,
         description="Local-first, offline Garmin Fenix 5 activity browser.",
     )

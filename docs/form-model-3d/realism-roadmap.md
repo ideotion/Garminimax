@@ -255,7 +255,7 @@ Avatown meshes, environment upgrades, and sampled sound eventually mean binaries
 Current policy: none committed. Options:
 
 1. **Installer-time fetch (recommended)**: assets live in a companion
-   `fenix5sync-assets` repo/release (each file license-manifested, SHA-256
+   `garminimax-assets` repo/release (each file license-manifested, SHA-256
    pinned); `install.sh` downloads once; **runtime stays fully offline**. Repo
    stays lean; PR11's manifest gate enforces license + hash + size budget.
 2. Git-LFS in-repo (simple, but bloats clones and LFS quotas).

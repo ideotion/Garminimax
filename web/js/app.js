@@ -45,7 +45,7 @@
 
   // ---- theme ----
   function initTheme() {
-    const saved = localStorage.getItem("f5s-theme") || "dark";
+    const saved = localStorage.getItem("gmx-theme") || "dark";
     document.documentElement.setAttribute("data-theme", saved);
     updateThemeIcon(saved);
   }
@@ -53,7 +53,7 @@
     const cur = document.documentElement.getAttribute("data-theme");
     const next = cur === "dark" ? "light" : "dark";
     document.documentElement.setAttribute("data-theme", next);
-    localStorage.setItem("f5s-theme", next);
+    localStorage.setItem("gmx-theme", next);
     updateThemeIcon(next);
     route(); // re-render so charts/track adopt the new palette
   }

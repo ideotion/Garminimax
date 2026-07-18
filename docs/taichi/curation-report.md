@@ -1,5 +1,5 @@
 # Evidence-Based Tai Chi Curation Report
-## Foundation deliverable for the Fenix5Sync guided-session knowledge base
+## Foundation deliverable for the Garminimax guided-session knowledge base
 
 Status: Deliverable 1 (curation report) and Deliverable 6 (benefits-by-condition table + bibliography) of the 11-part specification.
 Scope of this document: the evidence and styles foundation that every downstream artifact (movement library, session library, rotation plan, video specs, personalization rules) must cite back to.

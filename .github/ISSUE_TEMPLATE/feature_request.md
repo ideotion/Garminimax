@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Suggest an idea for Fenix5Sync
+about: Suggest an idea for Garminimax
 title: "[feature] "
 labels: enhancement
 ---
@@ -15,7 +15,7 @@ What would you like to see happen?
 
 ## Alignment with project goals
 
-Fenix5Sync is local-first and offline by design (read-only device, no runtime
+Garminimax is local-first and offline by design (read-only device, no runtime
 network calls, loopback-only server, lossless capture, minimal dependencies).
 How does this fit those constraints?
 

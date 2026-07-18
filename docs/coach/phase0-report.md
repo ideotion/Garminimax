@@ -1,8 +1,8 @@
-# Evidence-Based Training-Program Knowledge Base — Fenix5Sync Coaching Assistant
+# Evidence-Based Training-Program Knowledge Base — Garminimax Coaching Assistant
 
 Phase 0 deliverable: verified citation backbone, schemas, one fully worked reference program, deterministic personalization ruleset, sourced normative tables, and a build roadmap for the remaining goal × sport matrix.
 
-Author context: prepared for the Fenix5Sync project (local-first, offline Garmin analytics). All content is designed to ship as static bundled data plus deterministic rules — no runtime machine learning, no network calls at advice time.
+Author context: prepared for the Garminimax project (local-first, offline Garmin analytics). All content is designed to ship as static bundled data plus deterministic rules — no runtime machine learning, no network calls at advice time.
 
 > Note: this Markdown is the human-readable synthesis / audit trail. The companion
 > machine-readable artefacts (bibliography.json, schema.json, normative_data.json,

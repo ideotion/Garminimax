@@ -680,7 +680,7 @@ def salvage(
 
     imported = None
     if body.do_import and report.ok and report.repaired is not None and activity is not None:
-        tmp = tempfile.NamedTemporaryFile(prefix="fenix5sync-salvaged-", suffix=".fit", delete=False)
+        tmp = tempfile.NamedTemporaryFile(prefix="garminimax-salvaged-", suffix=".fit", delete=False)
         try:
             tmp.write(report.repaired)
             tmp.close()

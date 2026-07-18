@@ -11,7 +11,7 @@ that format into the canonical :class:`~core.models.Activity`.
   parser, recording the source format on the activity for provenance.
 
 New formats register here without the pipeline needing to know about them, which
-is what lets Fenix5Sync ingest exports from devices and platforms beyond the
+is what lets Garminimax ingest exports from devices and platforms beyond the
 Fenix 5 (anything that produces FIT, TCX or GPX).
 """
 

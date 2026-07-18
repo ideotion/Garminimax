@@ -38,7 +38,7 @@ def tmp_config(tmp_path: Path, sample_fit_path: Path) -> Config:
     cfg = Config()
     data_dir = tmp_path / "data"
     cfg.storage.data_dir = str(data_dir)
-    cfg.storage.db_file = str(data_dir / "fenix5sync.sqlite")
+    cfg.storage.db_file = str(data_dir / "garminimax.sqlite")
     cfg.export.output_dir = str(tmp_path / "exports")
     cfg.logging.log_dir = str(tmp_path / "logs")
     # Acquire directly from the fixtures directory (mode=path).

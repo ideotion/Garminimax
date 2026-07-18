@@ -1,5 +1,5 @@
 {
-  "schema": "fenix5sync.coach.evidence.v1",
+  "schema": "garminimax.coach.evidence.v1",
   "generated": "2026-07-02",
   "summary": "Evidence anchoring for the dynamic coach's SENSOR-side interpretive thresholds (core/coach_state.py, with two controller constants in core/coach_plan.py). The load/recovery formulas are settled; this pack cites the numbers behind the bands and records the honest caveats. The research confirmed the provisional values rather than overturning them, so no engine value changed — what changed is provenance plus a drift guard (tests/test_coach_evidence.py asserts every 'constants' value here still equals the code). Grades: E1 strong (meta/RCT), E2 moderate, E3 practice-based, E4 contested. ACWR is E4-adjacent: surfaced as one signal with its critiques attached, never a verdict.",
   "parameters": {

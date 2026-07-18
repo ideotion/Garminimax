@@ -57,7 +57,7 @@ GitHub Releases page for the auto-generated notes per tag.
   session from the same builder. `region`/`equipment`/`weighted_variant` are
   derived from `pattern` (the incoming metadata lacks them).
 - **Coach: objective → personalized plan → calendar.** A new objective form in
-  the Coach tab (and `POST /api/coach/plan`, `fenix5sync plan …`) turns a goal
+  the Coach tab (and `POST /api/coach/plan`, `garminimax plan …`) turns a goal
   (5K/10K/half/marathon/general, dates or weeks, optional goal time, days, level)
   into a dated base→build→peak→taper→race plan with step-back weeks, a tune-up
   effort and rest days. Each session carries a pace/heart-rate/effort target as a
@@ -94,7 +94,7 @@ GitHub Releases page for the auto-generated notes per tag.
 - **FIT Salvage** — recover corrupt/truncated `.FIT` files locally: walks the
   record stream to the last complete record, repairs the header/CRC and
   re-parses (deriving the summary from records when the session trailer was
-  lost). Available as `fenix5sync salvage`, `POST /api/salvage`, and a "Recover
+  lost). Available as `garminimax salvage`, `POST /api/salvage`, and a "Recover
   a corrupt file" panel on Import/Sync. The original is never modified.
 - **Sports at Home** — guided, evidence-based home training with household
   objects: a bundled offline content pack + curation report, a PAR-Q+-style
@@ -109,7 +109,7 @@ GitHub Releases page for the auto-generated notes per tag.
   your history (private leaderboard + trend).
 - **Liberate Your History** — import a Garmin/Strava account export (nested zips +
   gzip) via an `export` source mode, the Import/Sync page and a
-  `fenix5sync import-export` CLI command.
+  `garminimax import-export` CLI command.
 - **File/folder picker** — a "Browse…" button (backed by a read-only
   `GET /api/fs/list`) on the export-import and Settings source fields, so paths
   never have to be typed; plus an editable activity-source section in Settings.

@@ -5,9 +5,9 @@ All input data referenced is already committed under `docs/incoming/`
 (see `docs/incoming/README.md` for provenance and the two engine schemas).
 
 ```text
-# AUTONOMOUS IMPLEMENTATION SESSION — Fenix5Sync form-model + coach
+# AUTONOMOUS IMPLEMENTATION SESSION — Garminimax form-model + coach
 
-You are an autonomous senior engineer in the `ideotion/Fenix5Sync` repo. Implement the
+You are an autonomous senior engineer in the `ideotion/Garminimax` repo. Implement the
 five workstreams below end-to-end (code, tests, docs), in small verified commits, with a
 draft PR per workstream (WS1 first; others can stack on it). All input data is already in
 the repo at `docs/incoming/` (see `docs/incoming/README.md` for provenance + schemas).
@@ -103,7 +103,7 @@ citation resolution to R01–R14). Keep the honest "simplified pacer, not instru
    (DTSTART per date, SUMMARY=type, DESCRIPTION=target+rationale+basis, UID, DTSTAMP, CRLF
    folding). Unit-test it parses/round-trips.
 3. API: `POST /api/coach/plan` (agenda JSON) + `GET /api/coach/plan.ics` (download).
-   CLI: `fenix5sync plan ...` (+ `--ics PATH`). UI: a simple objective form in the Coach
+   CLI: `garminimax plan ...` (+ `--ics PATH`). UI: a simple objective form in the Coach
    tab → weekly-plan preview → "Export .ics"; sources discreet; "not medical advice / get
    clearance" framing.
 Acceptance: deterministic plan + valid ICS (both unit-tested); endpoints+CLI+UI wired.

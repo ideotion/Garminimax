@@ -29,7 +29,7 @@ gets the *history*.
   is parsed losslessly and **content-deduplicated** against the existing archive
   (a watch sync and a cloud export of the same activity collapse to one).
 - New `export` source mode, a `POST /api/sync/import-export` endpoint, a GUI
-  panel on Import/Sync, and a `fenix5sync import-export PATH` CLI command.
+  panel on Import/Sync, and a `garminimax import-export PATH` CLI command.
 
 Safety: zip members are checked for path traversal ("zip slip") at every level,
 and recursion is depth-bounded against pathological archives.

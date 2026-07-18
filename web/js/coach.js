@@ -243,7 +243,7 @@ const CoachView = (() => {
   }
 
   // ---------- objective -> dated plan ----------
-  const PLAN_KEY = "f5s-coach-objective";
+  const PLAN_KEY = "gmx-coach-objective";
   const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
   function loadObjective() {

@@ -1,6 +1,6 @@
-# Contributing to Fenix5Sync
+# Contributing to Garminimax
 
-Thanks for your interest in improving Fenix5Sync! This is a small, focused,
+Thanks for your interest in improving Garminimax! This is a small, focused,
 **local-first / offline** project, and contributions that keep it that way are
 very welcome.
 
@@ -18,8 +18,8 @@ Please keep changes aligned with the project's invariants:
 ## Development setup
 
 ```sh
-git clone https://github.com/ideotion/Fenix5Sync.git
-cd Fenix5Sync
+git clone https://github.com/ideotion/Garminimax.git
+cd Garminimax
 python3 -m venv .venv && . .venv/bin/activate
 pip install -e ".[test,dev]"
 ```

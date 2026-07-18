@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Domain models for Fenix5Sync.
+"""Domain models for Garminimax.
 
 These are plain dataclasses with no dependency on the web or CLI layers, so the
 core library can be used on its own. Field comments record the physical units of

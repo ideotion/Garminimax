@@ -40,7 +40,7 @@ def _cfg_for(root: Path, mode: str, path: Path | str) -> Config:
     cfg = Config()
     data = root / "data"
     cfg.storage.data_dir = str(data)
-    cfg.storage.db_file = str(data / "fenix5sync.sqlite")
+    cfg.storage.db_file = str(data / "garminimax.sqlite")
     cfg.export.output_dir = str(root / "exports")
     cfg.logging.log_dir = str(root / "logs")
     cfg.source.mode = mode

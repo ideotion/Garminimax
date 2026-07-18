@@ -4,12 +4,12 @@
 Commands wrap the core pipeline and the server. Nothing here contains business
 logic -- it all lives in :mod:`core` and :mod:`server`.
 
-    fenix5sync sync                 # import from the connected watch
-    fenix5sync list --sport running # search the local store
-    fenix5sync show 12              # activity summary + laps
-    fenix5sync export 12 --format gpx
-    fenix5sync serve --open         # launch the local GUI
-    fenix5sync init-config          # write a default config file
+    garminimax sync                 # import from the connected watch
+    garminimax list --sport running # search the local store
+    garminimax show 12              # activity summary + laps
+    garminimax export 12 --format gpx
+    garminimax serve --open         # launch the local GUI
+    garminimax init-config          # write a default config file
 """
 
 from __future__ import annotations
@@ -49,14 +49,14 @@ app = typer.Typer(
     no_args_is_help=True,
 )
 
-DEFAULT_CONFIG_PATH = "~/.config/fenix5sync/config.yaml"
+DEFAULT_CONFIG_PATH = "~/.config/garminimax/config.yaml"
 
 
 @app.callback()
 def _main(
     ctx: typer.Context,
     config: Optional[Path] = typer.Option(
-        None, "--config", "-c", envvar="FENIX5SYNC_CONFIG",
+        None, "--config", "-c", envvar="GARMINIMAX_CONFIG",
         help="Path to the YAML config file (defaults to the usual locations).",
     ),
 ) -> None:
@@ -178,7 +178,7 @@ def salvage(
         tmp = Path(out).expanduser() if out else None
         if tmp is None:
             import tempfile
-            fh = tempfile.NamedTemporaryFile(prefix="fenix5sync-salvaged-", suffix=".fit", delete=False)
+            fh = tempfile.NamedTemporaryFile(prefix="garminimax-salvaged-", suffix=".fit", delete=False)
             fh.write(report.repaired)
             fh.close()
             tmp = Path(fh.name)
@@ -379,7 +379,7 @@ def serve(
             target=_open_when_ready, args=(host, port, url), daemon=True
         ).start()
 
-    typer.secho(f"Serving Fenix5Sync at {url} (Ctrl-C to stop)", fg=typer.colors.GREEN)
+    typer.secho(f"Serving Garminimax at {url} (Ctrl-C to stop)", fg=typer.colors.GREEN)
     uvicorn.run(application, host=host, port=port, log_level=cfg.logging.level.lower())
 
 

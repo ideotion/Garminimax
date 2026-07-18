@@ -104,8 +104,8 @@ const TaiChiView = (() => {
   }
 
   // ---------- session builder (length-adjustable flow) ----------
-  const BUILD_KEY = "f5s-taichi-builder";
-  const SEED_KEY = "f5s-taichi-seed";
+  const BUILD_KEY = "gmx-taichi-builder";
+  const SEED_KEY = "gmx-taichi-seed";
   function loadBuild() { try { return JSON.parse(localStorage.getItem(BUILD_KEY)) || {}; } catch (_) { return {}; } }
   function saveBuild(b) { try { localStorage.setItem(BUILD_KEY, JSON.stringify(b)); } catch (_) {} }
   function nextSeed() {

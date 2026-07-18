@@ -1,7 +1,7 @@
 # Roadmap brief — validation against the codebase
 
 This document checks the claims in [`roadmap-brief.html`](roadmap-brief.html)
-against the actual Fenix5Sync source tree, and flags where they diverge. It is
+against the actual Garminimax source tree, and flags where they diverge. It is
 analyst commentary on the brief, not a change to the roadmap itself.
 
 - **Validated at commit:** `main` after PRs #5/#7/#8 (TCX/raw export +
@@ -99,7 +99,7 @@ Legend: ✅ done · ◑ partial · ◔ minimal · ❌ not started
    for its TSS (power) and TRIMP (HR) scoring, falling back to a duration estimate
    when no thresholds are set.
 
-5. **Gap-matrix nits.** For the Fenix5Sync row today, *wellness/sleep* is ○ (no
+5. **Gap-matrix nits.** For the Garminimax row today, *wellness/sleep* is ○ (no
    wellness data is ingested at all — only activity files), and *offline maps* is
    nearer ○→◐ (a polyline, not a map). Both are shown slightly generously.
 

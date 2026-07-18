@@ -92,7 +92,7 @@ reviews where the science has moved.
 
 # OUTPUT SCHEMA
 {
-  "schema": "fenix5sync.coach.evidence.v1",
+  "schema": "garminimax.coach.evidence.v1",
   "generated": "YYYY-MM-DD",
   "summary": "2-4 sentences on overall confidence and the biggest caveats.",
   "parameters": {

@@ -164,7 +164,7 @@ def test_agenda_exports_valid_ics_without_rest_days():
     # Every event maps to a real session date and carries a target line.
     dates = {s["date"].replace("-", "") for s in non_rest}
     for ev in parsed:
-        assert ev["UID"].endswith("@fenix5sync")
+        assert ev["UID"].endswith("@garminimax")
     first = parsed[0]
     assert "Target:" in first["DESCRIPTION"] or "Rest" in first["SUMMARY"]
     assert any(d in ics for d in dates)

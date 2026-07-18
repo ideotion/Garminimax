@@ -82,7 +82,7 @@ const RecapView = (() => {
     }
 
     return `<div class="rc-card">
-      <div class="rc-card-head"><div class="rc-brand">Fenix5Sync</div>
+      <div class="rc-card-head"><div class="rc-brand">Garminimax</div>
         <h2 class="rc-period">${esc(d.period)}</h2>
         <div class="rc-range">${dateStr(d.first_activity)} – ${dateStr(d.last_activity)}${d.primary_sport ? " · mostly " + esc(d.primary_sport) : ""}</div>
       </div>
@@ -93,7 +93,7 @@ const RecapView = (() => {
         <div class="rc-col"><div class="rc-bars"><div class="rc-bars-h">By sport</div>${sports || '<div class="rc-bar-row">—</div>'}</div></div>
       </div>
       ${extra}
-      <div class="rc-foot">Generated locally by Fenix5Sync · your data never left this machine</div>
+      <div class="rc-foot">Generated locally by Garminimax · your data never left this machine</div>
     </div>`;
   }
 
@@ -122,7 +122,7 @@ const RecapView = (() => {
   function exportHTML(d) {
     return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">` +
       `<meta name="viewport" content="width=device-width,initial-scale=1">` +
-      `<title>Fenix5Sync — ${esc(d.period)} recap</title><style>${EXPORT_CSS}</style></head>` +
+      `<title>Garminimax — ${esc(d.period)} recap</title><style>${EXPORT_CSS}</style></head>` +
       `<body>${cardInnerHTML(d)}</body></html>`;
   }
 
@@ -165,7 +165,7 @@ const RecapView = (() => {
     const exportBtn = U.el("button", { class: "btn", onclick: () => {
       const blob = new Blob([exportHTML(current)], { type: "text/html" });
       const url = URL.createObjectURL(blob);
-      U.download(url, `fenix5sync-recap-${current.year || "all-time"}.html`);
+      U.download(url, `garminimax-recap-${current.year || "all-time"}.html`);
       setTimeout(() => URL.revokeObjectURL(url), 4000);
       U.toast("Recap saved — a self-contained HTML file, yours to keep or share.", "good");
     } }, [U.el("span", { text: "Export recap (.html)" })]);
